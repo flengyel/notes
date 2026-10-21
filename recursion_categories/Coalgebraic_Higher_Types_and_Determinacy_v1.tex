@@ -1,0 +1,774 @@
+\documentclass[11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,microtype,amsmath,amssymb,amsthm,mathtools}
+\usepackage[margin=1in]{geometry}
+\usepackage{tikz-cd,enumitem,booktabs,xurl}
+\usepackage[hidelinks]{hyperref}
+\hypersetup{pdftitle={Coalgebraic higher types and determinacy}}
+\setlength{\emergencystretch}{2em}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newcommand{\N}{\omega}
+\newcommand{\B}{\omega^\omega}
+\newcommand{\Pcat}{\mathcal P}
+\newcommand{\Vcat}{\mathcal V}
+\newcommand{\Hcat}{\mathcal H}
+\newcommand{\Rcat}{\mathcal R}
+\newcommand{\pArr}{\mathbin{\Rightarrow_{\!p}}}
+\newcommand{\Coalg}{\operatorname{Coalg}}
+\newcommand{\Par}{\operatorname{Par}}
+\newcommand{\Tot}{\operatorname{Tot}}
+\newcommand{\supp}{\operatorname{supp}}
+\newcommand{\dom}{\operatorname{dom}}
+\newcommand{\id}{\operatorname{id}}
+\newcommand{\ev}{\operatorname{ev}}
+\newcommand{\ran}{\operatorname{ran}}
+\newcommand{\den}[1]{\mathopen{[\mkern-3mu[}#1\mathclose{]\mkern-3mu]}}
+\title{Coalgebraic higher types and determinacy}
+\author{}
+\date{Version 1 --- 21 October 2026}
+\begin{document}
+\maketitle
+\begin{abstract}
+Partial function types on numerical partial equivalence relations admit
+faithful coalgebraic realizations with countable carriers and binary
+observations. We compare this realization with restriction splitting and
+regular exact completion, and give an arithmetic-oracle bound for its
+finite-type fragment. A range obstruction occurs already at the type of
+partial numerical functions. These constructions and the obstruction
+hold in ZF. Determinacy supplies a different extension: strategies give
+Mealy or Moore reductions of stream predicates, and real determinacy
+gives continuous representative lifts on invariant comeager domains for
+quotients by countable group actions. These lifts have exact-domain
+asynchronous coalgebraic realizations. We identify the composition
+condition on their domains and a determinacy obstruction to complete
+real-valued invariants of numerical oracle presentations.
+\end{abstract}
+
+\section{Computational types and the ambient set theory}
+
+A recursion category can occur as a category of computations inside
+a larger category of types. Restriction splitting supplies domains;
+exact completion supplies certain quotients. Function types require
+further quotients of programs. The question here is whether the
+resulting operations admit simultaneous coalgebraic realizations and
+which parts of that construction depend on choice.
+
+We use ZF as the base theory. Additional axioms are stated in the
+results that use them. Write $\N=\{0,1,\ldots\}$ and
+$2=\{0,1\}$. Fix the Cantor pairing
+$\langle m,n\rangle=(m+n)(m+n+1)/2+n$ and its computable
+projections. Fix an acceptable numbering $(\varphi_e)_{e\in\N}$
+of the partial recursive numerical functions. Composition $gf$ means
+first $f$, then $g$. Equality of partial maps includes equality of
+domains. The restriction $\bar f$ is the partial identity on $\dom f$.
+
+A partial equivalence relation (PER) is a symmetric transitive relation
+$R\subseteq\N^2$. Put $\supp R=\{a:aRa\}$ and
+$|R|=\supp R/R$. Let $\Pcat$ have PERs as objects and partial
+functions $f:|R|\rightharpoonup|S|$ tracked by numerical programs
+as arrows. A tracker $e$ must satisfy, for every $a\in\supp R$,
+\[
+ f([a]_R)\downarrow\ \Longleftrightarrow\ \varphi_e(a)\downarrow,
+ \qquad
+ f([a]_R)=[\varphi_e(a)]_S\quad\hbox{when defined}.
+\]
+In particular, convergence is invariant under $R$. Products use
+numerical pairing, and a singleton PER gives a restriction terminal
+object $\mathbf1$. Program composition and strict pairing make
+$\Pcat$ a cartesian restriction category. Put
+$\Vcat=\Tot(\Pcat)$, and let $\mathbf N$ be equality on $\N$.
+The full subcategory on positive finite powers of $\mathbf N$ is the
+numerical recursion category $\Rcat$.
+
+Define $R\pArr S$ by
+\[
+ e\,(R\pArr S)\,e'
+ \quad\Longleftrightarrow\quad
+ \forall aRa'\;
+ \begin{cases}
+ \varphi_e(a),\varphi_{e'}(a')\text{ both diverge},\quad\text{or}\\
+ \varphi_e(a),\varphi_{e'}(a')\text{ converge to $S$-related values}.
+ \end{cases}
+\]
+This is a PER whose classes are precisely the arrows
+$R\rightharpoonup S$. Universal evaluation descends to
+$\ev:(R\pArr S)\times R\rightharpoonup S$. The parameter
+theorem gives total currying and the bijection
+\begin{equation}\label{eq:curry}
+ \Pcat(Q\times R,S)\cong\Vcat(Q,R\pArr S).
+\end{equation}
+Indeed, if $e$ tracks $h$, a total compiler sends $q$ to an index
+$s(e,q)$ satisfying
+$\varphi_{s(e,q)}(a)\simeq\varphi_e(\langle q,a\rangle)$.
+Input equivalence for $h$ proves extensionality of this compiler.
+Evaluation proves the two inverse identities in \eqref{eq:curry}.
+The bijection is natural under total changes of $Q$.
+
+The computation PER $LS$ identifies indices whose computations on
+input $0$ both diverge or return $S$-related values. Suspension and
+forcing give $\Pcat(R,S)\cong\Vcat(R,LS)$. The unit returns an
+immediate computation, and multiplication runs an outer computation
+and then the computation it returns. These explicit compilers define
+a monad on $\Vcat$, with Kleisli category $\Pcat$.
+
+Let $\Hcat$ have finite type expressions generated from
+$\mathbf1,\mathbf N$ using products, $L$, and $\pArr$ as objects,
+with all $\Pcat$-arrows between their PER interpretations.
+Retaining the expressions as object labels makes changes of numbering
+unambiguous. This includes both strict function
+types and lazy types. For the latter, set $V_\iota=\mathbf N$,
+$C_\sigma=LV_\sigma$, and
+$V_{\sigma\to\tau}=C_\sigma\pArr V_\tau$.
+A lazy function receives a computation name. Abstraction returns a
+function value; application forces the function computation and passes
+the argument name to it. The substitution theorem for these types is
+proved in \cite[Section 6]{Application}.
+
+All these definitions are available in ZF. Every class of a numerical
+PER has a least member, so $|R|$ is canonically bijective with
+$\{a\in\supp R:\forall b<a\;\neg(bRa)\}$. This selection is
+set-theoretic; the evaluation and currying algorithms above do not
+require it to be computable.
+
+\section{Comparison with the existing completions}\label{sec:completion}
+
+Let $K_r$ denote splitting of restriction idempotents. Let
+$\Rcat^1$ have the positive finite powers of $\N$ and a singleton
+as objects, with all partial recursive maps between them. The
+singleton is its restriction terminal object. Set
+$\mathcal K=K_r(\Rcat^1)$,
+$\mathcal D=\Tot(\mathcal K)$, and
+$\mathcal E=\operatorname{Ex}_{\mathrm{reg}}(\mathcal D)$.
+Here $\mathcal D$ is equivalent to the regular category of c.e.
+numerical supports and partial recursive maps total on their supports.
+Its regular exact completion has the presentation by c.e. PERs and
+c.e. saturated total functional relations described in
+\cite[section ``Completions of categories of partial operators'']{External}.
+Write $\Pcat_{\mathrm{ce}}$ for the full subcategory of $\Pcat$
+on c.e. PERs.
+
+\begin{proposition}\label{prop:completion}
+There are fully faithful functors
+$\mathcal K\to\Pcat$ and $\mathcal E\to\Vcat$.
+The first identifies split domains with equality PERs on c.e. supports.
+The second identifies $\mathcal E$ with the full subcategory of
+$\Vcat$ on c.e. PERs. Moreover,
+\[
+ \Par(\mathcal E,\operatorname{Mono}(\mathcal E))
+       \simeq\Pcat_{\mathrm{ce}}.
+\]
+\end{proposition}
+\begin{proof}
+A restriction idempotent on a numerical object is a partial identity
+on a c.e. set. Its splitting therefore has precisely the indicated
+support and partial recursive arrows, proving the first assertion.
+
+A c.e. total functional relation $F$ between PERs $R,S$ is executed
+by enumerating $F(a,b)$ until an output $b$ appears. Totality ensures
+termination on valid inputs, and functionality ensures that all
+outputs belong to the same $S$-class. Conversely a total tracker $e$
+defines the saturated c.e. relation
+\[
+ F_e(a,b)\quad\Longleftrightarrow\quad
+ aRa\ \land\ \exists c\,[\varphi_e(a)\downarrow=c\ \land\ cSb].
+\]
+Extensionality supplies saturation in the first coordinate. These
+constructions identify the homsets, and represented functions determine
+identities and composition.
+
+For a partial tracker, the name-domain
+$D_e=\{a:aRa\land\varphi_e(a)\downarrow\}$ is c.e. and
+$R$-saturated. Restricting $R$ to $D_e$ gives a domain span in
+$\mathcal E$. Conversely, consider a span
+$R\xleftarrow{m}T\xrightarrow{g}S$ with $m$ monic. Its underlying
+map on classes is injective: distinct classes are separated by maps
+from $\mathbf1$. On input $a$, search for a valid $T$-name whose
+$m$-image is $R$-related to $a$, and apply a tracker of $g$ to it.
+The search is effective because the presentation is c.e. Monicity
+makes the output class independent of the chosen preimage. Its
+convergence domain is exactly the domain of the span. This proves
+realizability of every span. Applied to the mono $m$, the same
+search gives its inverse onto its c.e. saturated image in $R$.
+Thus the span is isomorphic to the reconstructed domain span,
+which also proves faithfulness of the partial-map comparison.
+\end{proof}
+
+This comparison does not identify all PERs with exact-completion
+objects. The support of $\mathbf N\pArr\mathbf N$ is $\N$,
+but its relation is extensional equality of partial recursive
+functions and is not c.e. Its total-function subspace has the
+additional non-c.e. support
+$\mathrm{TOT}=\{e:\varphi_e\text{ is total}\}$.
+The obstruction in \cite[section ``Total function spaces and finite
+observations'']{External} shows that $\mathcal E$ has no exponential
+of the numerical object by itself. The larger category supplies
+operations unavailable in that completion.
+
+\section{A simultaneous coalgebraic realization}\label{sec:realization}
+
+Let $M(X)=2\times X^{\{+,-\}}$. An $M$-coalgebra is a set with
+a binary output and two transitions. Partial coalgebra morphisms have
+transition-closed subcoalgebra domains. Let $Q$ have carrier
+$\mathbb Z$, output $1$ precisely at $0,1$, and transitions adding
+or subtracting $1$. A coalgebra endomorphism of $Q$ commutes with
+translations, so it is $n\mapsto n+k$. Preservation of the two
+marked positions forces $k=0$. A nonempty subcoalgebra of $Q$ is
+all of $Q$.
+
+For a PER $R$, define $J(R)$ to be the coproduct of one copy of
+$Q$ for each element of $|R|$:
+\[
+ J(R)=|R|\times\mathbb Z,\qquad
+ o([a],n)=\chi_{\{0,1\}}(n),\qquad
+ \delta_\pm([a],n)=([a],n\pm1).
+\]
+For $f:R\rightharpoonup S$, define
+$Jf([a],n)=(f([a]),n)$ on $\dom f\times\mathbb Z$.
+This uses the rigid marker construction of \cite[Section 4]{Catalogue}
+with a single label.
+
+\begin{theorem}\label{thm:coalgebra}
+In ZF, $J:\Pcat\to\Par(\Coalg(M))$ is a faithful functor
+with countable carriers. It preserves restrictions, zeros, and binary
+near products. Its restriction to $\Hcat$ realizes application,
+total currying, the computation monad, and lazy substitution
+simultaneously in the category of represented arrows.
+\end{theorem}
+\begin{proof}
+Every subcoalgebra of $J(R)$ is a union of whole copies of $Q$.
+A map between two such unions sends each copy to one target copy,
+and rigidity of $Q$ forces it to preserve integer phase. Thus the
+construction $X\mapsto X\times\mathbb Z$, for arbitrary sets $X$,
+embeds $\mathbf{Pfn}$ fully faithfully into partial coalgebra maps.
+The functor $J$ is the faithful underlying-set
+functor of $\Pcat$ followed by this marker embedding. This proves
+functoriality, faithfulness, and preservation of restrictions and zeros.
+Least representatives code each $|R|\times\mathbb Z$ into $\N$.
+
+The coalgebra product of $J(R)$ and $J(S)$ is
+$|R|\times|S|\times\mathbb Z$. Indeed, two maps from any
+coalgebra into the two factors assign the same phase to each source
+state: their binary outputs after all words in $+,-$ coincide, and
+these outputs determine the phase uniquely. The two maps therefore
+pair into the displayed coalgebra. The bijection
+$|R\times S|\cong|R|\times|S|$ gives the canonical product
+comparison, including the intersection of partial domains.
+
+Every operation is an arrow of $\Pcat$, so $J$ sends its typed
+equations to equalities of partial coalgebra morphisms. Total arrows
+remain total. The represented category, with source objects retained
+as tags, is isomorphic to $\Pcat$; hence \eqref{eq:curry} remains
+its representing bijection. The monad on its total arrows is
+$JR\mapsto J(LR)$, with unit and multiplication obtained by
+applying $J$. These statements concern represented arrows. The
+terminal marker $Q=J\mathbf1$ is terminal on total maps in the
+marker subcategory, rather than the final coalgebra of all of
+$\Coalg(M)$.
+\end{proof}
+
+For example, after the product comparison, application is the concrete
+partial coalgebra morphism
+\[
+ (([e],[a]),n)\longmapsto([\varphi_e(a)],n).
+\]
+Its domain contains the entire integer orbit whenever the computation
+converges. Currying sends $([q],n)$ to $([s(e,q)],n)$, without
+executing the body. For lazy arguments, the $[a]$ coordinate is a
+class in a computation PER; the function decides whether to force it.
+Thus the construction retains both divergence and the multiplicity
+of states having identical observations. The final Moore behavior of
+$([a],n)$ depends only on $n$: the value $[a]$ is retained by its
+orbit copy. Application is realized by a morphism between these
+systems; the shifts themselves do not execute the application program.
+
+\subsection{An effective bound and oracle relatives}
+
+Write $0^{(\omega)}=\{\langle n,k\rangle:k\in0^{(n)}\}$
+for the join of the finite Turing jumps. It has the degree of
+arithmetical truth.
+
+\begin{proposition}\label{prop:effective}
+For finite type expressions defining $\Hcat$, the coalgebra carriers,
+outputs, transitions, and represented arrow maps have presentations
+uniformly computable relative to $0^{(\omega)}$. For the category
+of partial $A$-recursive numerical maps, the same construction has
+bound $A^{(\omega)}$.
+\end{proposition}
+\begin{proof}
+Induction on a type expression produces an arithmetical formula for
+its PER. Products use pairing and conjunction; $L$ and $\pArr$
+add numerical quantifiers and halting predicates. Arithmetical truth
+therefore decides support and equivalence uniformly across all finite
+types. It also decides the canonical-carrier condition
+$aRa\land\forall b<a\;\neg(bRa)$.
+
+On a canonical input $a$, execute a supplied tracker $e$. If it
+returns $b$, choose the least $c\leq b$ with $cSb$ using the
+oracle. This computes the represented partial map with its exact
+domain. Integer shifts and marker outputs require no further oracle.
+All tests relativize to $A$. On the original numerical objects the
+PERs are equality, so canonicalization is trivial and the arrow
+action retains its original computability.
+\end{proof}
+
+Let $\varphi,\psi$ be two acceptable numberings, and let
+$\Hcat_\varphi,\Hcat_\psi$ be their expression-labelled type
+categories. Changing the numbering gives a concrete comparison of
+their representations. The numerical translations are extended recursively
+to products and computation types. Write $t_R,u_R$ for forward and
+backward name translations at type $R$. At $R\pArr S$, compile
+in the new numbering the program
+$a\mapsto t_S(\varphi_e(u_R(a)))$. The parameter theorem produces
+this code totally. Induction gives quotient bijections $b_R$
+and preserves convergence. The equivalence
+$F:\Hcat_\varphi\to\Hcat_\psi$ is the identity on type
+expressions and sends $f:R\rightharpoonup S$ to
+$b_Sfb_R^{-1}$. Its coalgebra comparison is
+\[
+ \kappa_R:J(R)\longrightarrow J'(FR),\qquad
+ ([a]_R,n)\longmapsto([t_R(a)]_{FR},n)
+\]
+is a coalgebra isomorphism. For every partial $f:R\rightharpoonup S$,
+the equality $J'(Ff)\kappa_R=\kappa_SJf$ includes equality of
+domains. The same translations commute with evaluation, suspension,
+and currying. Write $c^P_{R,S}:P(R\times S)\to PR\times PS$
+for a functor's canonical product comparison. Then
+\[
+ c^{J'F}_{R,S}\kappa_{R\times S}
+       =(\kappa_R\times\kappa_S)c^J_{R,S},
+\]
+since product names are translated componentwise. These are the
+comparison equations of \cite[Section 3]{Catalogue}, applied to
+typed cartesian restriction categories. Restriction to the numerical
+recursion core gives a 1-cell in the representation 2-category
+defined there.
+
+\section{A range obstruction at the first function type}\label{sec:range}
+
+A Heller range of $f:X\rightharpoonup Y$ is a restriction idempotent
+$r$ with $rf=f$ such that $uf=vf$ implies $ur=vr$ for all
+parallel $u,v:Y\rightharpoonup Z$. It is least among restriction
+idempotents $d$ satisfying $df=f$: apply the condition to $d$ and
+$\id_Y$. The following obstruction involves a generated type,
+without adjoining an arbitrary additional PER.
+
+\begin{theorem}\label{thm:no-range}
+Let $S=\mathbf N\pArr\mathbf N$, and let
+$z:\mathbf1\to S$ select the total-zero function. In $\Hcat$,
+$z$ has no least supporting restriction idempotent and hence no
+Heller range. Moreover, $z$ is not a partial isomorphism: there is
+no $s:S\rightharpoonup\mathbf1$ with $sz=\id_{\mathbf1}$ and
+$zs=\bar s$. These conclusions hold in ZF.
+\end{theorem}
+\begin{proof}
+For each $n$, a program tracking $r_n:S\rightharpoonup S$
+runs its input index $e$ on $n$, returning $e$ if the result is
+$0$ and otherwise diverging. This is an extensional restriction
+idempotent, and $r_nz=z$. If a least supporting restriction $r$
+existed, then $r\leq r_n$ for every $n$. Together with $rz=z$,
+this makes the numerical domain of every tracker of $r$ exactly
+\[
+ Z=\{e:\forall n\;\varphi_e(n)\downarrow=0\}.
+\]
+This set is not c.e. Let $K=\{k:\varphi_k(k)\downarrow\}$.
+Uniformly in $k$, compile a program which, on input $n$, returns
+$0$ if $\varphi_k(k)$ has not halted within $n$ steps and diverges
+otherwise. Its index belongs to $Z$ exactly when $k\notin K$.
+Thus a tracker of $r$ would enumerate the non-c.e. complement of $K$.
+
+A partial isomorphism inverse $s:S\rightharpoonup\mathbf1$ would satisfy
+$sz=\id_{\mathbf1}$ and $zs=\bar s$. Its domain would be precisely
+the zero-function class, giving the same contradiction.
+\end{proof}
+
+The theorem also rules out an exact realization of the singleton
+image by a tracked partial identity. It persists after adding DC,
+AD, or real determinacy: its proof uses only numerical computation
+and ZF.
+
+\begin{proposition}\label{prop:existing-ranges}
+The functor $J$ preserves every Heller range that exists in the full
+PER category $\Pcat$.
+\end{proposition}
+\begin{proof}
+Let $r$ be a Heller range of $f:R\rightharpoonup S$ and put
+$I=\operatorname{im}f\subseteq|S|$. If $I$ is empty, applying
+the range condition to $\id_S$ and $0$ gives $r=0$.
+Otherwise choose a name $b$ with $[b]_S\in I$, set
+$B=\{a\in\supp S:[a]_S\in I\}$, and define the PER
+$T=S\cup(B\times B)$. The identity-name map $u:S\to T$
+and the constant-$b$ map $v:S\to T$ are total tracked maps.
+They satisfy $uf=vf$, so $ur=vr$. Since $r$ is a partial
+identity, the latter equation forces $\dom r\subseteq I$;
+$rf=f$ gives the reverse inclusion. Thus $r$ is the actual
+image restriction, and $Jr$ selects exactly the image orbits of
+$Jf$. That partial identity is its ambient Heller range.
+\end{proof}
+
+The ranges of the original recursion category are also
+preserved by $J$. Dovetailing numerical computations until a preimage
+is found gives, for each $f$, a partial section $s$ with
+$fs=\ran(f)$. In any restriction
+category, $r=fs$ and $rf=f$ imply
+$uf=vf\Rightarrow ur=ufs=vfs=vr$. A restriction functor
+preserves these equations. More generally, c.e. PER targets admit
+the c.e. saturated name-image of each arrow from a c.e. PER, so the
+comparison in Section~\ref{sec:completion} preserves their exact
+image ranges. The obstruction concerns the additional function type.
+
+\section{Dependent choice and countable coalgebras}
+
+Dependent choice (DC) states that every serial relation on a nonempty
+set admits a sequence following that relation from any specified
+starting point. A relation is serial when every element has a successor.
+Let $\mathcal P_+(X)$ denote the set of nonempty subsets of $X$.
+
+\begin{proposition}
+Over ZF, DC is equivalent to the assertion that every pointed
+coalgebra $c:X\to\mathcal P_+(X)$ has an infinite run
+$x_0,x_1,\ldots$ satisfying $x_{n+1}\in c(x_n)$.
+\end{proposition}
+\begin{proof}
+Associate to $c$ the serial relation $xRy\iff y\in c(x)$.
+Conversely, a serial relation defines this coalgebra by taking
+successor sets. The two assertions are identical under this
+correspondence.
+\end{proof}
+
+Deterministic transitions need no choice: their runs follow by
+recursion. On a carrier with a specified injection into $\N$, even
+nonempty successor sets have a least coded successor. DC becomes
+relevant for unrestricted state spaces or successively chosen lifts.
+
+Countable Boolean algebras also admit the ultrafilters needed in
+countable germ representations without a choice axiom. For an
+enumeration $b_0,b_1,\ldots$ of a Boolean algebra and a proper ideal
+$I$, put $e_0=1$ and choose $e_{n+1}=e_n\wedge b_n$ if that
+meet is outside $I$; otherwise put
+$e_{n+1}=e_n\wedge\neg b_n$. The second meet is then outside
+$I$, since the join of the two meets is $e_n$. The set
+$U=\{b:\exists n\;(e_n\leq b)\}$ is an ultrafilter disjoint
+from $I$. Each decision is specified by a formula, so this is a
+ZF recursion. Applied to the proper ideals of agreement domains
+for unequal arrows, it gives the separating labels in the countable
+germ construction of \cite[Section 4]{Catalogue}. Coding a germ by
+a label index and an arrow index avoids a countable choice of fibre
+enumerations. This argument is restricted to explicitly countable
+presentations.
+
+The Boolean Prime Ideal Theorem (BPI), in its ultrafilter formulation,
+asserts that every nontrivial Boolean algebra has an ultrafilter.
+It extends this separation argument to arbitrary Boolean algebras:
+apply it to the quotient by a proper ideal and pull back the
+ultrafilter. Applied to $\mathcal P(\N)/\mathrm{Fin}$, it yields
+a nonprincipal ultrafilter on $\N$. Under AD every ultrafilter is
+countably complete \cite[Theorem 2.8]{KoellnerWoodin}; such an
+ultrafilter on $\N$ would contain every cofinite tail and therefore
+their empty intersection. Thus BPI is incompatible with AD, while
+the countable separation argument above remains available in ZF.
+
+\section{Determinacy as a coalgebraic comparison theorem}\label{sec:games}
+
+Baire space $\B$ has the product topology of discrete $\N$.
+For a finite string $s$, let $[s]$ be its basic cylinder. A causal
+map $f:\B\to\B$ has $f(x)(n)$ determined by
+$x\upharpoonright(n+1)$; a strictly causal map $g$ has
+$g(y)(n)$ determined by $y\upharpoonright n$.
+Causal maps have countable-state Mealy presentations, with output
+and transition map $X\times\N\to\N\times X$. Strictly causal
+maps have Moore presentations $X\to\N\times X^\N$.
+Each presentation includes a specified initial state. Finite input
+histories give the states in both constructions, with the empty
+history as initial state.
+Their tables can be coded as subsets of $\N$.
+
+AD states that every length-$\omega$ perfect-information game with
+integer moves is determined. A winning strategy is a function on
+finite play histories, so it has a real code. PD restricts this
+assertion to projective payoff sets; here projective means obtained
+from Borel sets by finitely many projections and complements, with
+real parameters allowed.
+
+\begin{theorem}\label{thm:mealy-moore}
+Assume ZF+AD. For $A,B\subseteq\B$, exactly one of the
+following alternatives holds:
+\begin{enumerate}[label=(\roman*),nosep]
+\item a real-coded causal Mealy machine realizes $f$ with
+      $A=f^{-1}(B)$;
+\item a real-coded strictly causal Moore machine realizes $g$ with
+      $\B\setminus B=g^{-1}(A)$.
+\end{enumerate}
+For projective $A,B$, PD suffices in place of AD.
+\end{theorem}
+\begin{proof}
+Let I and II alternately produce $x(n)$ and $y(n)$, with II
+winning exactly when $x\in A\iff y\in B$. A winning II
+strategy produces $y(n)$ after seeing $x(n)$; its finite histories
+give the Mealy machine in (i). A winning I strategy produces
+$x(n)$ before seeing $y(n)$; its histories give the Moore machine
+in (ii). Determinacy supplies one of these strategies. For
+projective $A,B$, the payoff is projective.
+
+Both alternatives cannot hold. Their composite $h=gf$ is strictly
+causal and has a unique fixed stream. Construct its $n$th coordinate
+from the preceding coordinates, filling later coordinates temporarily
+with zero; strict causality makes the choice of that tail irrelevant.
+Induction proves existence and uniqueness of the fixed stream $x$.
+But then
+$x\in A\iff f(x)\in B\iff gf(x)\notin A$, a contradiction.
+\end{proof}
+
+This is the strategy proof of Wadge's lemma, with the two timing
+conventions made explicit \cite[Theorem 7D.3]{Moschovakis}.
+The fixed stream is also obtained by feeding each Moore output back
+as the next input. For a Moore presentation $(o,\delta)$, its
+closed transition is $q\mapsto\delta_{o(q)}(q)$.
+For Borel payoff sets the game is already determined by Borel
+determinacy; AD extends the assertion to arbitrary stream predicates.
+The familiar Wadge order and its well-foundedness under determinacy
+are discussed in \cite{Carroy}.
+
+The real code of a strategy is an oracle for its machine, not a
+recursive program in general. A game requiring II to produce a fixed
+nonrecursive stream has a winning strategy and no recursive winning
+strategy. Thus determinacy gives additional real-coded comparisons
+without changing which numerical programs halt.
+
+\section{Representative lifts on invariant domains}\label{sec:lifts}
+
+Real determinacy, written $\mathrm{AD}_{\mathbb R}$, permits a
+whole real as each move. It implies AD. We use it with DC.
+A subset of a Polish space has the Baire property if it differs
+from an open set by a meager set; a set is meager if it is a
+countable union of nowhere dense sets, and comeager if its complement
+is meager. AD gives the Baire property to every set of reals
+\cite[Theorem 2.7]{KoellnerWoodin}. A map into Baire space whose
+basic-open preimages have this property is continuous on a comeager
+subset \cite[p.~50]{Ikegami}; the proof below chooses that subset
+to be invariant and $G_\delta$.
+
+\begin{theorem}\label{thm:generic-lift}
+Assume ZF+DC+$\mathrm{AD}_{\mathbb R}$. Let a specified countable
+group $\Gamma$ act on $X=\B$ by homeomorphisms, and let $E$ be
+its orbit equivalence relation. Let $S$ be an equivalence relation
+on a nonempty $Y\subseteq\B$. Every function
+$F:X/E\to Y/S$ has a representative lift
+$f:D\to Y$ on an $E$-invariant comeager $G_\delta$ set
+$D\subseteq X$, with $f$ continuous and
+\begin{equation}\label{eq:quotient-lift}
+ [f(x)]_S=F([x]_E)\qquad(x\in D).
+\end{equation}
+If instead ZF+DC+PD holds and the relation
+$P(x,y)\iff y\in Y\land F([x]_E)=[y]_S$ is projective,
+the same conclusion holds.
+\end{theorem}
+\begin{proof}
+Every section of $P$ is nonempty. In the real-move game where I
+first chooses $x$ and II then chooses $y$, let II win iff $P(x,y)$;
+later moves are irrelevant. I has no winning strategy, since its
+first move admits a suitable reply. A winning II strategy therefore
+uniformizes $P$ by a total function $f_0:X\to Y$.
+
+For each basic open set $U_n\subseteq\B$, choose an open
+$V_n\subseteq X$ and a meager error set witnessing the Baire
+property of $f_0^{-1}(U_n)$. DC permits these countably many
+choices and their closed nowhere dense covers. Outside the union
+of all errors, enlarged to a meager $F_\sigma$ set, the resulting
+comeager $G_\delta$ set $G$ satisfies
+$f_0^{-1}(U_n)\cap G=V_n\cap G$ for every $n$.
+Hence $f_0|G$ is continuous.
+
+Put $D=\bigcap_{\gamma\in\Gamma}\gamma^{-1}G$.
+Homeomorphisms preserve comeagerness, so the Baire category theorem
+makes $D$ a dense comeager $G_\delta$. The group law makes it
+invariant. Restricting $f_0$ to $D$ proves \eqref{eq:quotient-lift}.
+
+Under PD, projective uniformization supplies a projective graph for
+$f_0$ \cite[Theorem 6C.5]{Moschovakis}. Its basic-open preimages
+are projective and have the Baire property. The remaining argument
+is unchanged.
+\end{proof}
+
+Writing $q_D:D\to D/E$ and $q_Y:Y\to Y/S$ for the quotient
+maps, the equality just proved is the commutative square
+\[
+\begin{tikzcd}[column sep=large]
+D\arrow[r,"f"]\arrow[d,"q_D"']&Y\arrow[d,"q_Y"]\\
+D/E\arrow[r,"F|_{D/E}"']&Y/S.
+\end{tikzcd}
+\]
+The lift preserves output classes; it need not choose the same
+output name for equivalent inputs. Invariant uniformization requires
+that stronger equality of names, a distinction studied in
+\cite{KechrisWolman}.
+
+\subsection{An exact-domain machine for the lift}
+
+A pointed asynchronous transducer consists of a state set $Q$, an
+initial state $q_0\in Q$, and a total transition and output rule
+$Q\times\N\to(\N\sqcup\{\ast\})\times Q$, where $\ast$
+means no output on that step. It defines a partial map on streams:
+the domain consists of inputs producing infinitely many numerical
+outputs, and the output stream omits the $\ast$ symbols.
+
+\begin{proposition}\label{prop:transducer}
+Every continuous $f:D\to\B$ with $D\subseteq\B$ a dense
+$G_\delta$ has a real-coded countable-state asynchronous transducer
+whose partial stream function is exactly $f$, including its domain.
+\end{proposition}
+\begin{proof}
+Write $D=\bigcap_i O_i$ with each $O_i$ open. A state records
+the input prefix and the number $n$ of outputs already emitted.
+The initial state is the empty prefix with $n=0$.
+After extending the input prefix to $s$, emit $m$ precisely when
+\begin{equation}\label{eq:emission}
+ [s]\subseteq\bigcap_{i\leq n}O_i
+ \quad\hbox{and}\quad
+ \forall x\in[s]\cap D\; f(x)(n)=m.
+\end{equation}
+Otherwise emit $\ast$. Density of $D$ ensures uniqueness of $m$.
+Advance $n$ exactly when a numerical output is emitted.
+
+For $x\in D$, continuity and openness imply that a sufficiently
+long prefix satisfies \eqref{eq:emission} for each successive $n$.
+Thus every output digit is eventually emitted and equals $f(x)(n)$.
+If $x\notin D$, choose $j$ with $x\notin O_j$. No prefix
+of $x$ lies inside $O_j$, so no output numbered $j$ or later
+can be emitted. The productivity domain is exactly $D$.
+The rule is a function on a countable set of states and inputs;
+its numerical graph is a real code for the machine.
+\end{proof}
+
+Applied to Theorem~\ref{thm:generic-lift}, this gives a coalgebraic
+realizer of the quotient function on the saturated domain $D/E$.
+The transition table supplies an oracle for its execution. Because
+its productivity domain is $G_\delta$, its name-level partial map
+is an arrow of the continuous-operator recursion category
+$\mathcal B_o$ of Montagna--Sorbi
+\cite[Lemma 2.5, Definition 2.2, and Proposition 3.1]{MontagnaSorbi}.
+
+\subsection{Composition of the obtained partial maps}
+
+Fix Polish ambient spaces $X_0,X_1,X_2$. Regard the obtained maps
+as partial continuous maps $f:D\subseteq X_0\to X_1$ and
+$g:E\subseteq X_1\to X_2$, using the inclusion $Y\subseteq\B$
+for a lift's codomain. Their composite has domain
+$D\cap f^{-1}(E)$. It is again $G_\delta$ when $D,E$ are
+$G_\delta$ in their respective ambient spaces. Quotient compatibility
+and saturation also compose. Comeagerness does not: take $f$ constant
+with value $y_0\in X_1=\B$ and
+$E=\B\setminus\{y_0\}$. Both original domains can be
+comeager while the composite has empty domain.
+
+A sufficient condition is that $f$ preserve category in the
+preimage sense: the inverse image of every meager subset of $X_1$
+is meager in $D$. With $D$ comeager in $X_0$, this makes
+$D\cap f^{-1}(E)$ comeager in $X_0$ whenever $E$ is comeager
+in $X_1$. Such partial maps with comeager $G_\delta$ domains
+are closed under composition. The lifting theorem does not impose
+this condition, so its general conclusion belongs to the category
+of partial maps with actual $G_\delta$ domains.
+
+\section{Consequences for classification by integer sets}\label{sec:classification}
+
+There is a distinction between giving each presentation a real code
+and assigning a complete real-valued invariant to its equivalence
+class. Determinacy imposes restrictions on the latter.
+
+Under AD there is no transversal for eventual equality $E_0$ on
+$2^\N$. To see this, suppose $T$ chose one point per class.
+Its translates by finite coordinate flips are pairwise disjoint and
+cover Cantor space. All have the Baire property. If $T$ is meager,
+this is a countable meager cover. If $T$ is nonmeager, it is
+comeager in some cylinder. A nontrivial flip beyond that cylinder's
+specified coordinates makes a disjoint translate comeager in the
+same cylinder, again a contradiction. Thus quotient sets of reals
+behave differently from quotients of subsets of $\N$, whose least
+representatives exist in ZF.
+
+Let $\mathcal D_T$ be the Turing degrees of subsets of $\N$.
+A cone is $\{d:d\geq_T b\}$ for some degree $b$. Under AD,
+the sets of degrees containing a cone form a countably complete
+ultrafilter \cite[Theorems 2.8--2.9]{KoellnerWoodin}.
+
+\begin{proposition}\label{prop:cone-invariant}
+Assume ZF+AD. Every Turing-degree-invariant function
+$I:2^\N\to2^\N$ is constant on a Turing cone.
+\end{proposition}
+\begin{proof}
+For each $n$, the cone ultrafilter chooses one of the two sets of
+degrees on which $I(A)(n)$ is $0$ or $1$. Countable completeness
+makes the intersection of these chosen sets contain a cone. All
+coordinates of $I$ are fixed on that cone.
+\end{proof}
+
+Let $\Rcat_A$ have the positive finite powers of $\N$ as objects
+and partial $A$-recursive functions as arrows. Then
+$\Rcat_A=\Rcat_B$ exactly when $A\equiv_T B$:
+simulation proves one direction, and the characteristic functions
+of the oracles prove the other. Equality here is equality as concrete
+subcategories of $\mathbf{Pfn}$. There is therefore no complete
+real-valued invariant for equality of these presentations under AD.
+Indeed, a cone contains both a degree and its strictly higher jump,
+while Proposition~\ref{prop:cone-invariant} assigns them the same
+invariant. For classification under abstract or structured equivalence,
+the same obstruction applies if the corresponding categories do not
+all become equivalent on a cone. Whether they do is a separate
+categorical question.
+
+\section{The resulting extension problem}
+
+The numerical exact-completion comparison and the coalgebraic
+realization are established in Sections~\ref{sec:completion} and
+\ref{sec:realization}. They give higher-type operations and their
+comparison maps without choice. Theorem~\ref{thm:no-range} prevents
+this particular program-quotient extension from having ranges for
+all its arrows. A completion retaining those ranges must change
+the admitted arrows or the interpretation of function types.
+
+Determinacy supplies real-coded reductions of behavioral predicates.
+Real determinacy, or projective determinacy with projective data,
+also supplies representative lifts realized by partial continuous
+transducers. A higher-type construction based on those lifts must
+specify composable domains and compatible choices of realizers.
+Neither faithfulness of a coalgebra representation nor existence of
+individual lifts alone asserts a universal property for that
+construction.
+
+\begin{thebibliography}{9}
+\small
+\bibitem{Application} \emph{Application and substitution for external
+higher types}, version 1, 2026.
+\bibitem{Catalogue} \emph{Recursion categories and their coalgebraic
+representations}, version 3, 2026.
+\url{https://github.com/flengyel/notes/tree/main/recursion_categories}.
+\bibitem{External} F.~Lengyel, \emph{An External Finite-Type Completion
+of Recursion Categories}, version 0.11, 2026.
+\url{https://github.com/flengyel/External_Finite_Type_Completion}.
+\bibitem{Moschovakis} Y.~N. Moschovakis, \emph{Descriptive Set Theory},
+second edition, 2009, Theorems 6C.5 and 7D.3.
+\url{https://www.math.ucla.edu/~ynm/lectures/dst2009/dst2009.pdf}.
+\bibitem{Carroy} R.~Carroy, L.~Motto Ros, and S.~Scamperti,
+\emph{A classification of the Wadge hierarchies on zero-dimensional
+Polish spaces}, arXiv:2302.01319v2, 2023.
+\url{https://arxiv.org/abs/2302.01319}.
+\bibitem{Ikegami} D.~Ikegami, \emph{Real determinacy and real Blackwell
+determinacy}, RIMS K\^oky\^uroku \textbf{1754} (2011), 32--74.
+\url{https://www.kurims.kyoto-u.ac.jp/~kyodo/kokyuroku/contents/pdf/1754-05.pdf}.
+\bibitem{KoellnerWoodin} P.~Koellner and W.~H. Woodin,
+\emph{Large Cardinals from Determinacy}, author manuscript, Section 2.1.
+\url{https://bpb-us-e1.wpmucdn.com/websites.harvard.edu/dist/f/94/files/2022/07/LCFD.pdf}.
+\bibitem{KechrisWolman} A.~S. Kechris and M.~Wolman,
+\emph{Invariant uniformization}, arXiv:2405.15111v3, 2026.
+\url{https://arxiv.org/abs/2405.15111}.
+\bibitem{MontagnaSorbi} F.~Montagna and A.~Sorbi,
+\emph{Creativeness and completeness in recursion categories of partial
+recursive operators},
+Journal of Symbolic Logic \textbf{54} (1989), 1023--1041.
+\href{https://doi.org/10.2307/2274763}{doi:10.2307/2274763}.
+\end{thebibliography}
+\end{document}

@@ -1,0 +1,726 @@
+\documentclass[11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,microtype,amsmath,amssymb,amsthm,mathtools}
+\usepackage[margin=1in]{geometry}
+\usepackage{tikz-cd,enumitem,xurl}
+\usepackage[hidelinks]{hyperref}
+\hypersetup{pdftitle={Application and substitution for external higher types},pdfsubject={Partial function types, computation names, and the term-substitution law}}
+\setlength{\emergencystretch}{2em}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newcommand{\N}{\omega}
+\newcommand{\Pcat}{\mathcal P}
+\newcommand{\Vcat}{\mathcal V}
+\newcommand{\dom}{\operatorname{dom}}
+\newcommand{\supp}{\operatorname{supp}}
+\newcommand{\id}{\operatorname{id}}
+\newcommand{\ev}{\operatorname{ev}}
+\newcommand{\FV}{\operatorname{FV}}
+\newcommand{\pArr}{\mathbin{\Rightarrow_{\!p}}}
+\newcommand{\den}[1]{\mathopen{[\mkern-3mu[}#1\mathclose{]\mkern-3mu]}}
+\newcommand{\ats}{\mathord{@}}
+\title{Application and substitution for external higher types}
+\author{}
+\date{Working note, version 1 --- 21 October 2026}
+\begin{document}
+\maketitle
+\begin{abstract}
+We extend the substitution calculus of \emph{The Unbearable Notation of
+Logic} to partial computations. Strict simultaneous evaluation introduces
+a domain restriction that can invalidate the ordinary substitution equation.
+Occurrence maps determine this restriction and give an exact formula using
+only the arguments that occur. We then construct partial function types
+over partial equivalence relations on program codes. Evaluation descends
+to their quotients, and the parameter theorem supplies total currying and
+computable composition of function values. A monad of suspended computations
+restores the term-substitution equation on computation-valued assignments.
+Passing these computations as arguments gives a lazy finite-type semantics
+with substitution and beta equations for arbitrary argument terms.
+These constructions give a concrete semantic extension of the classical
+recursion category and specify the realization problem for other recursion
+categories and their coalgebraic representations.
+\end{abstract}
+
+\section{Syntax, values, and computations}
+
+The substitution calculus in \cite[Sections 3--6 and 8--9]{Notation}
+distinguishes a syntactic substitution, an assignment, and evaluation.
+For a finitary signature $\Sigma$, let $T_\Sigma X$ be the set of
+finite terms with variables in $X$. A substitution is a total function
+$\sigma:X\to T_\Sigma Y$. Its extension
+$\sigma^*:T_\Sigma X\to T_\Sigma Y$ replaces each variable $x$
+by the term $\sigma(x)$, simultaneously. If $\tau:Y\to T_\Sigma Z$,
+their composite is $\tau\star\sigma=\tau^*\sigma$.
+Structural induction gives
+$(\tau\star\sigma)^*=\tau^*\sigma^*$, the associativity law
+for the term monad's Kleisli composition.
+
+For a total $\Sigma$-algebra $A$ and an assignment
+$\ats:Y\to A$, write $\ats t$ for the value of a term.
+The induced assignment is
+$(\ats\bullet\sigma)(x)=\ats\sigma(x)$. The substitution law is
+\begin{equation}\label{eq:at-law}
+ \ats(\sigma^*t)=(\ats\bullet\sigma)t.
+\end{equation}
+To interpret computations, one must specify what an assignment contains
+and when its entries are evaluated. The distinction between values and
+computations is the basis of the monadic semantics of
+\cite{Moggi,BFS}. We first determine the domain correction for strict
+partial evaluation, then construct function types and computation names
+for which the relevant operations are explicit.
+
+All computations below are deterministic and have nontermination as their
+only effect. Composition $gf$ means first $f$, then $g$. Equality of
+partial functions includes equality of their domains. For
+$f:Z\rightharpoonup A$, write $\bar f:Z\rightharpoonup Z$ for
+the identity on $\dom f$. A finite partial tuple
+$\langle f_1,\ldots,f_k\rangle:Z\rightharpoonup A^k$ is defined
+exactly where all its components are defined.
+
+\section{The domain correction to substitution}
+
+Let each $n$-ary symbol of $\Sigma$ denote a partial function
+$f^A:A^n\rightharpoonup A$. Evaluation is strict: it evaluates all
+immediate subterms before applying $f^A$. This gives each term $t$ over
+a finite context $X$ a partial interpretation
+$\den t_X:A^X\rightharpoonup A$. Nullary symbols may also diverge.
+
+\begin{example}\label{ex:weakening}
+Take $A=\N$, a constant $0$, a divergent constant $\Omega$, and
+a binary symbol $p$ whose value operation is $p(a,b)=a$. On total
+assignments, the terms $x$ and $p(x,y)$ denote the same function
+$A^2\to A$. Under the substitution
+$\sigma(x)=0$, $\sigma(y)=\Omega$, the first term returns $0$
+and the second diverges. Thus equality on total value assignments is
+not a congruence for arbitrary computational substitution.
+\end{example}
+
+The same issue occurs before any quotient is formed. Evaluating every
+entry of the substituted assignment produces the nowhere-defined tuple
+$\langle0,\Omega\rangle$, even when the outer term is just $x$.
+
+\begin{proposition}\label{prop:restriction-substitution}
+Let $t\in T_\Sigma X$ and $\sigma:X\to T_\Sigma Y$, where
+$X,Y$ are finite. Put
+\[
+ s=\langle\den{\sigma(x)}_Y\rangle_{x\in X},
+ \qquad g=\den{\sigma^*t}_Y.
+\]
+Then
+\begin{equation}\label{eq:restriction-substitution}
+ \den t_X\,s=g\bar s.
+\end{equation}
+If $S=\FV(t)$ and
+$s_S=\langle\den{\sigma(x)}_Y\rangle_{x\in S}$, then
+\begin{equation}\label{eq:support-substitution}
+ \den t_S\,s_S=\den{\sigma^*t}_Y.
+\end{equation}
+\end{proposition}
+\begin{proof}
+On $\dom s$, every substituted term has a value. Structural induction
+on $t$ proves that evaluation after substitution and evaluation under
+this value assignment have the same definedness and value. Outside
+$\dom s$, both sides of \eqref{eq:restriction-substitution} are
+undefined. This proves the first identity.
+
+For the second, apply the first identity in context $S$. If
+$\sigma^*t$ converges, every leaf substitution corresponding to an
+occurrence of a variable in $t$ converges, by strictness. Hence
+$\dom g\subseteq\dom s_S$, and $g\bar s_S=g$. The empty
+support case uses the unique total map into the singleton $A^\varnothing$.
+\end{proof}
+
+The categorical calculation uses
+$\pi_xs=\den{\sigma(x)}\bar s$ and
+$\langle g_i e\rangle=\langle g_i\rangle e$ for a nonempty tuple
+and a restriction idempotent $e$. For the nullary step, the restriction
+terminal maps satisfy $!_X s=!_Y\bar s$.
+The same structural induction proves the proposition
+in a cartesian restriction category, using restriction products and
+a restriction terminal object for the empty context.
+
+\subsection{Occurrence maps and evaluation order}
+
+The occurrence construction of \cite[Section 9 and Appendix A.5]{Notation}
+records a map $o:\{1,\ldots,m\}\to\{1,\ldots,k\}$: the
+$r$th occurrence uses argument $o(r)$. It induces the total routing map
+$o^*:A^k\to A^m$. For partial maps $f_i:Z\rightharpoonup A$,
+\begin{equation}\label{eq:routing}
+ o^*\langle f_1,\ldots,f_k\rangle
+ =\langle f_{o(1)},\ldots,f_{o(m)}\rangle
+    \overline{\langle f_1,\ldots,f_k\rangle}.
+\end{equation}
+Both sides evaluate the selected coordinates on the intersection of
+all $k$ component domains. This identity explains why routing after
+strict tuple evaluation cannot discard an unused divergence.
+
+Let $t_{\rm lin}$ be obtained by giving each variable occurrence of
+$t$ a fresh variable. With $x_1,\ldots,x_k$ the declared variables,
+the exact occurrence formula is
+\begin{equation}\label{eq:linear-substitution}
+ \den{t[\sigma]}
+ =\den{t_{\rm lin}}
+   \langle\den{\sigma(x_{o(1)})},\ldots,
+           \den{\sigma(x_{o(m)})}\rangle.
+\end{equation}
+Structural induction proves the equality, including domains. Repeated
+occurrences evaluate the same deterministic computation and obtain the
+same value. The fibrewise occurrence maps of \cite{Notation} record
+the routing in iterated substitution. These formulas concern algebraic
+terms with strict operations; abstraction will require the distinction
+between a function value and a computation producing one.
+
+\section{Partial function types on program quotients}\label{sec:per}
+
+Fix an acceptable numbering $(\varphi_e)_{e\in\N}$ of the unary
+partial recursive functions. Use the Cantor pairing bijection
+\[
+ \langle m,n\rangle=\frac{(m+n)(m+n+1)}2+n
+ \quad(m,n\in\N),
+\]
+whose two projections are computable.
+The parameter theorem supplies a total recursive function $s$ such that
+\begin{equation}\label{eq:smn}
+ \varphi_{s(e,t)}(a)\simeq\varphi_e(\langle t,a\rangle).
+\end{equation}
+Here $\simeq$ means that both sides diverge or both converge to the
+same number. The code $s(e,t)$ is produced without running the
+computation on the right.
+
+A partial equivalence relation, or PER, is a symmetric transitive
+relation $R\subseteq\N^2$. Its support is
+$\supp R=\{a:aRa\}$, and its represented set is
+$|R|=\supp R/R$. We allow arbitrary PERs; their supports and
+relations need not be computably enumerable. Let $\mathbf N$ be
+equality on $\N$. Products are coded by pairing:
+$\langle a,b\rangle\,(R\times S)\,\langle a',b'\rangle$
+exactly when $aRa'$ and $bSb'$.
+
+\begin{definition}
+An arrow $f:R\rightharpoonup S$ is a partial function
+$|R|\rightharpoonup|S|$ with a program $e$ such that, for every
+$a\in\supp R$,
+\[
+ f([a]_R)\downarrow\quad\Longleftrightarrow\quad
+       \varphi_e(a)\downarrow,
+\]
+and, when defined, $\varphi_e(a)\in\supp S$ and
+$f([a]_R)=[\varphi_e(a)]_S$. Such a program \emph{tracks} $f$.
+Write $\Pcat$ for the category of PERs and these arrows, and
+$\Vcat=\operatorname{Tot}(\Pcat)$ for its total subcategory.
+\end{definition}
+
+The definition requires definedness to be invariant under the input PER.
+Identity is tracked by the identity program, and program composition
+tracks composition of arrows. Equality of arrows is equality of the
+represented partial functions, so composition is associative.
+Restriction is tracked by running the tracker and returning the original
+input when it halts. Pairing and projections give restriction products.
+A PER with support $\{0\}$ gives a restriction terminal object.
+Thus $\Pcat$ is a cartesian restriction category. Its full subcategory
+on the positive finite powers of $\mathbf N$ is the classical
+recursion category, up to the chosen numerical codings.
+
+\begin{definition}\label{def:partial-function-per}
+For PERs $R,S$, define $R\pArr S$ by declaring
+$e\,(R\pArr S)\,e'$ if, for every $aRa'$, either
+\begin{enumerate}[nosep,label=(\roman*)]
+\item both $\varphi_e(a)$ and $\varphi_{e'}(a')$ diverge; or
+\item both converge and their values are $S$-related.
+\end{enumerate}
+\end{definition}
+
+Symmetry follows by interchanging $a,a'$; transitivity follows by using
+the middle program at $a'$ and the fact that $a'Ra'$. Thus this is a
+PER. Its support consists exactly of the trackers of arrows
+$R\rightharpoonup S$, and its quotient identifies precisely those
+trackers that induce the same arrow. In particular,
+$\supp(\mathbf N\pArr\mathbf N)=\N$: an arbitrary numerical
+program denotes a partial numerical function.
+
+\begin{theorem}\label{thm:partial-currying}
+Universal application induces an arrow
+\[
+ \ev_{R,S}:(R\pArr S)\times R\rightharpoonup S,
+ \qquad \ev([e],[a])=[\varphi_e(a)]
+\]
+on its domain of convergence. For every PER $Q$, there is a bijection
+\begin{equation}\label{eq:currying}
+ \Pcat(Q\times R,S)\ \cong\ \Vcat(Q,R\pArr S),
+ \qquad h\longmapsto\Lambda h,
+\end{equation}
+natural under total changes of parameter $Q$. Its equations are
+\begin{equation}\label{eq:beta-eta}
+ \ev(\Lambda h\times\id_R)=h,
+ \qquad \Lambda\bigl(\ev(g\times\id_R)\bigr)=g
+       \quad(g\text{ total}).
+\end{equation}
+\end{theorem}
+\begin{proof}
+Definition~\ref{def:partial-function-per} makes the evaluator's
+domain saturated under $(R\pArr S)\times R$ and its output class
+independent of representatives. The universal program tracks it.
+
+If $e$ tracks $h$, define $\Lambda h$ on names by
+$t\mapsto s(e,t)$. For $tQt'$ and $aRa'$, the tracking condition
+for $h$ gives matching definedness and $S$-related outputs on
+$\langle t,a\rangle$ and $\langle t',a'\rangle$.
+Equation~\eqref{eq:smn} therefore gives
+$s(e,t)\,(R\pArr S)\,s(e,t')$. The compiler is total, so it
+tracks a total arrow $Q\to R\pArr S$.
+
+The first equation in \eqref{eq:beta-eta} follows from
+\eqref{eq:smn}. Conversely, if $g$ is total, its value at $[t]$
+is a class of programs. Uncurrying and currying return a program
+with the same partial behavior on every valid $R$-input, and hence
+the same class. This proves the second equation and uniqueness.
+For total $u:Q'\to Q$, both $\Lambda(h(u\times\id_R))$
+and $(\Lambda h)u$ classify the same family of partial functions,
+proving naturality.
+\end{proof}
+
+\subsection{Composition and the partial-parameter boundary}
+
+A total recursive compiler $c$ for composition satisfies
+\[
+ \varphi_{c(d,e)}(a)\simeq\varphi_d(\varphi_e(a)),
+\]
+where the right side first runs $e$. It induces a total arrow
+\[
+ (S\pArr U)\times(R\pArr S)\longrightarrow R\pArr U.
+\]
+An identity-program code gives the identity function value. These
+operations satisfy the unit and associativity equations on the
+quotients. Program indices for different compilation orders need not
+be equal.
+
+The restriction to total parameters in Theorem~\ref{thm:partial-currying}
+is exact. Suppose $|Q'|$ is nonempty and
+$u:Q'\rightharpoonup Q$ is nowhere defined. Then
+$(\Lambda h)u$ is nowhere defined. But
+$\Lambda(h(u\times\id_R))$ is total and returns the class of the
+everywhere-divergent function. A divergent computation of a function
+value and a function value that diverges on every argument are distinct.
+The next construction preserves this distinction during substitution.
+
+\section{Computation names and the substitution law}\label{sec:lift}
+
+For a PER $S$, define a lifting PER $LS$ on program indices by
+\[
+ e\,(LS)\,e'\quad\Longleftrightarrow\quad
+ \begin{cases}
+ \varphi_e(0),\varphi_{e'}(0)\text{ both diverge};\quad\text{or}\\
+ \varphi_e(0),\varphi_{e'}(0)\text{ both converge to $S$-related values}.
+ \end{cases}
+\]
+A valid name is a suspended computation that either diverges or returns
+a valid $S$-name. The quotient $|LS|$ consists of a bottom element and
+one element for each member of $|S|$. Naming a computation does not
+decide whether it will converge.
+
+\begin{proposition}\label{prop:lift}
+The construction $L$ is a monad on $\Vcat$, and there are natural
+bijections
+\begin{equation}\label{eq:kleisli-partial}
+ \Pcat(R,S)\cong\Vcat(R,LS)
+\end{equation}
+identifying $\Pcat$ with its Kleisli category.
+\end{proposition}
+\begin{proof}
+For $f:R\rightharpoonup S$ tracked by $e$, the parameter theorem
+produces, uniformly and totally in $a$, a code for the suspended
+computation $\varphi_e(a)$. This defines a total arrow
+$\widehat f:R\to LS$. Conversely, a total arrow $R\to LS$
+can be followed by forcing the returned computation name on input
+$0$. The definition of $LS$ supplies precisely the invariant
+definedness and values required of an arrow in $\Pcat$. These
+constructions are inverse on represented functions.
+
+For total $f:S\to T$, $Lf$ sends a computation name to a new name
+that runs it and then applies a tracker of $f$. The unit
+$\eta_S:S\to LS$ returns a code for the computation immediately
+returning its input name. The multiplication $\mu_S:LLS\to LS$
+returns a code that runs the outer computation and then the resulting
+inner computation. All these code-producing programs are total on
+valid inputs, by the parameter theorem. Independence of trackers
+follows from equality of the represented results and their definedness.
+
+The monad laws follow by comparing executions: returning before or
+after a computation preserves its convergence and value; either
+parenthesization of flattening runs the same three successive
+computations. Kleisli composition runs the first computation and then
+the second, so \eqref{eq:kleisli-partial} preserves identities and
+composition.
+\end{proof}
+
+The monad has computable strength
+$R\times LS\to L(R\times S)$: retain the $R$-name and return
+a suspended computation that forces the $S$-name and pairs the result
+with it. This gives the value/computation semantics of
+\cite{Moggi,BFS} concretely on the program quotients.
+Combining \eqref{eq:currying} and \eqref{eq:kleisli-partial} gives
+\[
+ \Vcat(Q\times R,LS)\cong\Vcat(Q,R\pArr S).
+\]
+Thus $R\pArr S$ represents the function space from values of type
+$R$ to computations of type $S$.
+
+\subsection{Restoring the paper's equation}
+
+Let $A$ be a PER and interpret each symbol $f$ of $\Sigma$ by an
+arrow $f:A^n\rightharpoonup A$ of $\Pcat$. Define a total
+operation $f^L:(LA)^n\to LA$ as follows: from $n$ computation
+names, construct a suspended computation that forces them in order
+and then runs a tracker of $f$ on the resulting values. The program
+constructing this name is total. The represented computation may
+diverge. For a nullary operation it simply suspends that operation.
+
+These operations give the underlying set $|LA|$ an ordinary total
+$\Sigma$-algebra structure. Assignments now have type
+$\ats:X\to|LA|$: every variable is assigned a computation value,
+including possibly bottom.
+
+\begin{theorem}\label{thm:computation-substitution}
+For this algebra and every syntactic substitution
+$\sigma:X\to T_\Sigma Y$,
+\[
+ \ats(\sigma^*t)=(\ats\bullet\sigma)t
+ \qquad(t\in T_\Sigma X).
+\]
+Equality is equality of computations: both diverge, or both return
+the same $A$-class. If the signature and its primitive trackers are
+effective, the construction is uniformly computable from a finite term,
+substitution terms for its variables, and computation names for the
+finitely many assignment entries used.
+\end{theorem}
+\begin{proof}
+The variable case is the definition of $\ats\bullet\sigma$.
+At a node $f(t_1,\ldots,t_n)$, apply the induction hypotheses to
+each subterm and then the total operation $f^L$. This proves the
+equation by structural induction, exactly as for the total term
+algebra in \cite{Notation}. Recursive syntax processing and the
+total suspension compilers prove the effective assertion.
+\end{proof}
+
+An unused divergent computation is now an available assignment entry
+whose name is never forced. The distinction underlying
+Example~\ref{ex:weakening} is
+\[
+ (|A|_\bot)^X\quad\text{versus}\quad(|A|^X)_\bot.
+\]
+The first set records partial information coordinate by coordinate;
+the second records only success or failure of the whole tuple. The
+algebra on $|LA|$ distinguishes $x$ from strict $p(x,y)$ and makes
+equality on all computation-valued assignments a substitution
+congruence. The equality is relative to this interpretation of the
+primitive symbols. In particular, strict lifting of the numerical
+projection $p(a,b)=a$ forces both input computations. It is different
+from the structural projection $(LA)^2\to LA$, which simply selects
+the first computation value. The equation $p(x,y)=x$ of the original
+value algebra therefore need not hold in the lifted algebra.
+
+\section{Higher-type application and strict sequencing}
+
+Starting with $A_\iota=\mathbf N$, define finite value types by
+\[
+ A_{\sigma\times\tau}=A_\sigma\times A_\tau,
+ \qquad A_{\sigma\to\tau}=A_\sigma\pArr A_\tau.
+\]
+Computations of type $\sigma$ are represented by $LA_\sigma$.
+Application is the partial arrow
+$A_{\sigma\to\tau}\times A_\sigma\rightharpoonup A_\tau$
+of Theorem~\ref{thm:partial-currying}. Suspending it gives the
+total value-category arrow
+\[
+ A_{\sigma\to\tau}\times A_\sigma\longrightarrow LA_\tau.
+\]
+A body $h:\Gamma\times A_\sigma\rightharpoonup A_\tau$
+has a total abstraction $\Lambda h:\Gamma\to A_{\sigma\to\tau}$.
+These provide partial application and abstraction at every finite type.
+
+Substitution that first computes a value context is strict sequencing. If
+$u:\Delta\rightharpoonup\Gamma$ and
+$t:\Gamma\rightharpoonup A$, then the computation
+\emph{let $\gamma\leftarrow u$ in $t$} is $tu$. Its domain is
+\[
+ \{d\in\dom u:u(d)\in\dom t\}.
+\]
+On suspended computations this is monadic bind. For a parameterized
+body $h:\Gamma\times R\rightharpoonup S$ and an argument
+$u:\Gamma\rightharpoonup R$, the exact application equation is
+\begin{equation}\label{eq:cbv-beta}
+ \ev\langle\Lambda h,u\rangle
+       =h\langle\id_\Gamma,u\rangle.
+\end{equation}
+Both sides first require $u$ to converge, and then apply the same
+partial function to its value. If $h$ ignores its second argument
+but $u$ diverges, both sides diverge. For a total change of context
+$v:\Delta\to\Gamma$, Theorem~\ref{thm:partial-currying} gives
+\[
+ (\Lambda h)v=\Lambda\bigl(h(v\times\id_R)\bigr).
+\]
+Thus total value substitution commutes with abstraction, while
+substitution that first executes a computation is represented by
+explicit sequencing.
+
+This gives two distinct associative compositions. Syntactic
+substitution is Kleisli composition for the term monad $T_\Sigma$.
+Execution and strict sequencing are Kleisli composition for the
+partiality monad $L$. Theorem~\ref{thm:computation-substitution}
+connects term substitution to evaluation on computation names;
+equation~\eqref{eq:cbv-beta} describes application after a computation
+produces an argument value. Their types determine which law applies.
+
+\section{Lazy application and substitution}\label{sec:lazy}
+
+Lazy application passes a computation name to the function without
+first forcing it. For PERs $A,B$, its function values therefore have
+type $(LA)\pArr B$, rather than $A\pArr B$. The evaluator
+\[
+ \ev:((LA)\pArr B)\times LA\rightharpoonup B
+\]
+may return a value even when its second argument represents a divergent
+computation. A program returning $0$ without inspecting its input
+is an example when $B=\mathbf N$.
+
+For a body $h:\Gamma\times LA\rightharpoonup B$ and an argument
+$u:\Gamma\rightharpoonup A$, suspension gives a total arrow
+$\widehat u:\Gamma\to LA$. The application law is
+\begin{equation}\label{eq:lazy-body-beta}
+ \ev\langle\Lambda h,\widehat u\rangle
+       =h\langle\id_\Gamma,\widehat u\rangle.
+\end{equation}
+Unlike \eqref{eq:cbv-beta}, this equation does not first execute $u$.
+The function body decides whether to force its computation name.
+
+\subsection{A finite-type semantics}
+
+Consider types generated by a numerical base type $\iota$ and arrows.
+Define value PERs $V_\sigma$ and computation PERs $C_\sigma$ by
+\[
+ V_\iota=\mathbf N,\qquad C_\sigma=LV_\sigma,\qquad
+ V_{\sigma\to\tau}=C_\sigma\pArr V_\tau.
+\]
+For a finite context
+$\Gamma=(x_1:\sigma_1,\ldots,x_k:\sigma_k)$, put
+$E_\Gamma=\prod_{i=1}^k C_{\sigma_i}$, with the terminal PER
+for the empty context. An environment contains computation values;
+its formation does not execute the computations they name.
+
+There is a total arrow
+\begin{equation}\label{eq:lazy-app}
+ a_{\sigma,\tau}:C_{\sigma\to\tau}\times C_\sigma\to C_\tau.
+\end{equation}
+On input names $p,q$, its tracker returns a suspended program which
+runs $\varphi_p(0)$ to obtain a function index $e$, and then runs
+$\varphi_e(q)$. It passes $q$ itself to $e$, without first running
+$\varphi_q(0)$. The parameter theorem makes the code-producing map
+total. The definitions of the lifting and function PERs prove
+independence of representatives. Application forces the function
+computation; the function controls evaluation of its argument.
+
+Use the simply typed lambda calculus with variables, abstraction,
+application, numerical constants, and a divergent constant
+$\Omega_\sigma$ at each type. Interpret a judgement
+$\Gamma\vdash M:\tau$ by a total arrow
+\[
+ \den M_\Gamma:E_\Gamma\to C_\tau
+\]
+of $\Vcat$. Variables are projections. A numeral denotes the
+constant immediately returning that number, and $\Omega_\sigma$
+denotes the constant bottom computation. Application is interpreted by
+\[
+ \den{MN}_\Gamma
+ =a_{\sigma,\tau}\langle\den M_\Gamma,\den N_\Gamma\rangle.
+\]
+For a body $\Gamma,x:\sigma\vdash M:\tau$, let
+$h:E_\Gamma\times C_\sigma\rightharpoonup V_\tau$ be the
+partial arrow corresponding to $\den M_{\Gamma,x}$ under
+\eqref{eq:kleisli-partial}. Define
+\begin{equation}\label{eq:lazy-lambda}
+ \den{\lambda x.M}_\Gamma
+       =\eta_{V_{\sigma\to\tau}}\Lambda h.
+\end{equation}
+Thus abstraction immediately returns a function value whose body can
+later force an argument computation. These clauses construct a tracker
+uniformly from a finite typed term.
+
+\begin{theorem}[Lazy substitution and beta]\label{thm:lazy-substitution}
+Let $\theta$ assign to every $x_i:\sigma_i$ in $\Gamma$ a term
+$\Delta\vdash\theta(x_i):\sigma_i$. Let $M[\theta]$ denote
+simultaneous capture-avoiding substitution, and put
+\[
+ s_\theta=\langle\den{\theta(x_1)}_\Delta,\ldots,
+                       \den{\theta(x_k)}_\Delta\rangle:
+ E_\Delta\to E_\Gamma.
+\]
+For $\Gamma\vdash M:\tau$,
+\begin{equation}\label{eq:lazy-substitution}
+ \den{M[\theta]}_\Delta=\den M_\Gamma s_\theta.
+\end{equation}
+For $\Gamma,x:\sigma\vdash M:\tau$ and
+$\Gamma\vdash N:\sigma$,
+\begin{equation}\label{eq:lazy-beta}
+ \den{(\lambda x.M)N}_\Gamma
+       =\den{M[N/x]}_\Gamma.
+\end{equation}
+No convergence assumption on $N$ is needed.
+\end{theorem}
+\begin{proof}
+Every component of $s_\theta$ is total: it returns a computation name,
+including a name for bottom. The variable case of
+\eqref{eq:lazy-substitution} is therefore the projection identity.
+The constant cases hold because reindexing is total. The application
+case follows by induction, pairing, and composition with
+$a_{\sigma,\tau}$.
+
+For abstraction, rename the bound variable to avoid capture. Extension
+of $\theta$ by that variable induces the total map
+$s_\theta\times\id_{C_\sigma}$. By induction and the naturality
+of \eqref{eq:kleisli-partial}, the substituted body corresponds to
+$h(s_\theta\times\id_{C_\sigma})$. Total-parameter naturality
+in Theorem~\ref{thm:partial-currying} and
+\eqref{eq:lazy-lambda} give the required abstraction equation.
+
+For beta, put $q=\langle\id_{E_\Gamma},\den N_\Gamma\rangle$.
+Forcing the immediately returned function in
+\eqref{eq:lazy-lambda} and applying it to the argument name gives
+\[
+ a_{\sigma,\tau}
+   \langle\eta_{V_{\sigma\to\tau}}\Lambda h,\den N_\Gamma\rangle
+ =\widehat{hq}
+ =\den M_{\Gamma,x}q.
+\]
+The substitution equation identifies the last expression with
+$\den{M[N/x]}_\Gamma$.
+\end{proof}
+
+In particular, $(\lambda x.0)\Omega_\sigma$ denotes the computation
+returning $0$. A divergent function computation and an immediately
+returned divergent function remain different: $\Omega_{\sigma\to\tau}$
+diverges, whereas $\lambda x.\Omega_{\sigma\to\tau}x$ returns a
+function value. The eta equation in
+Theorem~\ref{thm:partial-currying} applies to total families of function
+values, as its statement requires.
+
+The same principle extends the algebraic substitution calculus in
+Section~\ref{sec:lift}. One may interpret a primitive symbol by any
+specified total arrow $(LA)^n\to LA$, including a non-strict one.
+The proof of Theorem~\ref{thm:computation-substitution} still applies.
+Such an arrow $F$ extends a given value operation
+$f:A^n\rightharpoonup A$ when
+$F\eta_A^n=\widehat f:A^n\to LA$.
+For example, the structural projection selects its first computation
+without forcing the second and satisfies $p(x,y)=x$ on all assignments.
+A value operation $A^n\rightharpoonup A$ alone does not determine
+this behavior on divergent arguments; the operation on computation
+values specifies it.
+
+\subsection{Sharing and occurrence maps}
+
+Passing a suspended argument is call-by-name. Call-by-need additionally
+shares its evaluation: variable occurrences referring to the same
+binding use a single stored computation, whose result is retained once
+obtained. For the pure lambda calculus, call-by-name and call-by-need
+induce the same observational equivalence
+\cite[Theorem 32]{MOW}. The quotient semantics above records
+convergence and results. To describe sharing itself, an operational
+presentation must also record the shared bindings.
+
+The occurrence maps of \cite[Section 9]{Notation} specify which uses
+belong to the same binding. An occurrence map
+$o:\{1,\ldots,m\}\to\{1,\ldots,k\}$ can route each occurrence
+to one of $k$ suspended bindings. An empty fibre causes no demand;
+several occurrences in one fibre can share a result. The maps supply
+the incidence data. A call-by-need evaluator must in addition implement
+the store and its update rule. This distinguishes the substitution
+theorem from an assertion about the cost of executing substitutions.
+
+\section{The remaining representation problem}
+
+The construction above provides a semantic category containing the
+classical recursion category, together with explicit application,
+abstraction, composition compilers, and substitution laws. The use of
+arbitrary PERs supplies quotient types beyond the computably enumerable
+supports considered in the regular exact completion of
+\cite[section ``Total function spaces and finite observations'']{External}.
+For example, the partial numerical function type has all indices as
+support, while its subspace of total functions has support
+$\mathrm{TOT}=\{e:\varphi_e\text{ is total}\}$.
+The constructions belong to the realizability approach to higher-type
+computability surveyed in \cite{Longley}.
+
+\begin{proposition}\label{prop:no-least-range}
+There is an arrow $f$ of $\Pcat$ for which no least restriction
+idempotent $r$ satisfies $rf=f$.
+\end{proposition}
+\begin{proof}
+Choose a non-computably-enumerable set $D\subseteq\N$ containing
+$0$. Let $S$ have full support, with $D$ as one equivalence class
+and every $n\notin D$ as a singleton class. The total arrow
+$f:1\to S$ selecting $[0]_S$ is tracked by the constant program.
+For each $n\notin D$, the partial identity $r_n:S\rightharpoonup S$
+undefined only at $[n]_S$ is tracked by a program that diverges on
+input $n$ and otherwise returns its input. Thus $r_nf=f$.
+
+If a least $r$ existed, it would satisfy $r\leq r_n$ for every
+$n\notin D$, where restriction idempotents are ordered by inclusion
+of domains. Its domain would therefore consist exactly of $[0]_S$.
+Since $S$ has full numerical support, any tracker of $r$ would halt
+exactly on $D$, a contradiction.
+\end{proof}
+
+Consequently, $\Pcat$ does not admit ranges for all arrows, when ranges
+are least restriction idempotents supporting an arrow. A construction
+retaining that structure must choose a smaller family of quotients
+or a different semantic extension.
+
+For an arbitrary recursion category, the next theorem must provide
+comparable computation names and total parameterization compilers in
+a specified semantic extension. A coalgebraic realization must in
+addition interpret evaluation and these compilers and prove compatibility
+with the quotient relations and their domains. In particular, the
+application square must express equality of partial maps, including
+definedness; agreement only where both sides happen to converge is
+insufficient. The domain and value conditions are precisely those in
+the partial-application descent proposition of
+\cite[section ``Application on quotient types'']{External}.
+
+The classical model supplies concrete operations against which such
+a realization can be tested. The required assertions are preservation
+of application \eqref{eq:beta-eta}, total parameter substitution,
+strict sequencing \eqref{eq:cbv-beta}, lazy application and
+substitution in Theorem~\ref{thm:lazy-substitution}, and the
+computation-valued term-substitution equation. Establishing these for a family of
+coalgebraic representations would extend the classification of their
+underlying recursion categories to a comparison of their higher-type
+operations.
+
+\begin{thebibliography}{9}
+\small
+\bibitem{Notation} F.~Lengyel, \emph{The Unbearable Notation of Logic},
+version 11, 2026.
+\url{https://github.com/flengyel/The_Unbearable_Notation_Of_Logic}.
+\bibitem{External} F.~Lengyel, \emph{An External Finite-Type Completion
+of Recursion Categories}, version 0.11, 2026.
+\url{https://github.com/flengyel/External_Finite_Type_Completion}.
+\bibitem{Moggi} E.~Moggi, \emph{Notions of computation and monads},
+Information and Computation \textbf{93} (1991), 55--92.
+\href{https://doi.org/10.1016/0890-5401(91)90052-4}{doi:10.1016/0890-5401(91)90052-4}.
+\bibitem{BFS} A.~Bucalo, C.~F\"uhrmann, and A.~Simpson,
+\emph{An equational notion of lifting monad},
+Theoretical Computer Science \textbf{294} (2003), 31--60.
+\href{https://doi.org/10.1016/S0304-3975(01)00243-2}{doi:10.1016/S0304-3975(01)00243-2}.
+\bibitem{Longley} J.~R. Longley, \emph{Notions of computability at higher
+types I}, in \emph{Logic Colloquium 2000}, 2005, pp.~32--142.
+\href{https://doi.org/10.1017/9781316755884.004}{doi:10.1017/9781316755884.004}.
+\bibitem{MOW} J.~Maraist, M.~Odersky, and P.~Wadler,
+\emph{The call-by-need lambda calculus}, Journal of Functional
+Programming \textbf{8} (1998), 275--317.
+\href{https://doi.org/10.1017/S0956796898003037}{doi:10.1017/S0956796898003037}.
+\end{thebibliography}
+\end{document}
