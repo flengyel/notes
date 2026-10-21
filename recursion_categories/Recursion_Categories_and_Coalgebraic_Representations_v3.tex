@@ -1,0 +1,1223 @@
+\documentclass[11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,microtype,amsmath,amssymb,amsthm,mathtools}
+\usepackage[margin=1in]{geometry}
+\usepackage{booktabs,longtable,array,tikz-cd,enumitem,xurl}
+\usepackage[hidelinks]{hyperref}
+\hypersetup{pdftitle={Recursion categories and their coalgebraic representations},pdfsubject={Catalogue and classification problems over sets of integers, version 3}}
+\setlength{\emergencystretch}{2em}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{problem}[theorem]{Problem}
+\newcommand{\N}{\omega}
+\newcommand{\Baire}{\mathbb B}
+\newcommand{\Z}{\mathbb Z}
+\newcommand{\R}{\mathcal R}
+\newcommand{\C}{\mathcal C}
+\newcommand{\Pfn}{\mathbf{Pfn}}
+\newcommand{\Set}{\mathbf{Set}}
+\newcommand{\Par}{\operatorname{Par}}
+\newcommand{\Coalg}{\operatorname{Coalg}}
+\newcommand{\Tot}{\operatorname{Tot}}
+\newcommand{\id}{\operatorname{id}}
+\newcommand{\dom}{\operatorname{dom}}
+\newcommand{\Rep}{\operatorname{Rep}}
+\title{Recursion categories and their coalgebraic representations\\\large A catalogue and classification problems over sets of integers}
+\author{}
+\date{Version 3 --- 21 October 2026}
+\begin{document}
+\maketitle
+\begin{abstract}
+We catalogue classical, arithmetical, analytical, admissible, syntactic,
+and operator examples of recursion categories, together with equivariant
+and existence constructions. The operator categories of Montagna and
+Sorbi give direct connections with effective descriptive set theory and
+Wadge reducibility. We organize coalgebraic representations and their
+comparisons in a 2-category, classify representations with constant
+coalgebra targets up to equivalence, and construct representations using
+binary observations of subsets of the integers. Countable recursion
+categories admit countable coalgebraic representations. Faithfulness
+requires retaining distinctions between states with equal observable
+behavior. The catalogue separates the underlying recursion category,
+its presentation, and the structure preserved by a representation.
+Pointed Moore coalgebras also present strictly causal operators on
+streams; we give their countable and computable realizations and relate
+their equality to behavioral equivalence.
+\end{abstract}
+
+\section{The objects to be classified}
+
+A catalogue of recursion categories must specify both arrows and their
+equality. These determine which computations the category admits and
+which computations it identifies. A coalgebraic representation adds
+states, observations, and transitions; its comparison theory should
+retain the partial-map structure that supports universal computation.
+
+\subsection{Sets, sequences, and numerical codings}\label{sec:codes}
+We work in ZFC and write $\omega=\{0,1,2,\ldots\}$ and
+$2=\{0,1\}$. Baire space is $\Baire=\omega^\omega$ and Cantor
+space is $2^\omega$, both with the product topology of their discrete
+coordinate spaces. A finite prescription of coordinates defines a
+basic clopen set. We identify a subset $A\subseteq\omega$ with its
+characteristic function $\chi_A\in2^\omega$.
+
+Fix the Cantor pairing bijection
+\begin{equation}\label{eq:cantor-pair}
+ \langle-,-\rangle:\omega^2\longrightarrow\omega,
+ \qquad
+ \langle m,n\rangle=\frac{(m+n)(m+n+1)}2+n.
+\end{equation}
+On the diagonal $m+n=s$, its values are the consecutive integers
+from $s(s+1)/2$ to $(s+1)(s+2)/2-1$. These intervals partition
+$\omega$, proving bijectivity and giving a computable inverse.
+For each fixed arity, tuples are coded by iterating this pairing.
+
+For a total function $f:\omega\to\omega$, define its coded graph
+$\Gamma_f\subseteq\omega$ and graph characteristic function
+$\chi_f:\omega\to2$ by
+\begin{equation}\label{eq:graph-code}
+ \Gamma_f=\{\langle m,n\rangle:f(m)=n\},\qquad
+ \chi_f(\langle m,n\rangle)=
+ \begin{cases}1,&f(m)=n,\\0,&f(m)\ne n.\end{cases}
+\end{equation}
+Thus $\chi_f=\chi_{\Gamma_f}$ is a point of Cantor space. The
+graph codes of all total functions form the subspace
+\[
+ \mathcal G=\{x\in2^\omega:
+       \text{for every }m\text{ there is exactly one }n
+       \text{ with }x(\langle m,n\rangle)=1\}.
+\]
+This subspace is $G_\delta$, meaning a countable intersection of
+open sets. Indeed, the condition of at most one $1$ in each row is
+closed, and the condition of at least one is
+\[
+ \bigcap_{m\in\omega}\ \bigcup_{n\in\omega}
+       \{x:x(\langle m,n\rangle)=1\}.
+\]
+Closed subsets of Cantor space are $G_\delta$, so their intersection
+has the asserted form. The map $f\mapsto\chi_f$ is a homeomorphism
+$\Baire\to\mathcal G$: each graph coordinate tests one value of
+$f$, and the inverse image in $\mathcal G$ of the condition
+$f(m)=n$ is the clopen coordinate condition
+$x(\langle m,n\rangle)=1$. Both maps are computable; to recover
+$f(m)$ from $\chi_f$, search row $m$ for its unique $1$.
+
+For $f,g\in\Baire$, interleaving is the function
+$(f\oplus g)(2n)=f(n)$ and $(f\oplus g)(2n+1)=g(n)$.
+Its inverse projections are $P_1h(n)=h(2n)$ and
+$P_2h(n)=h(2n+1)$. Write $f^+(n)=f(n+1)$ for the tail.
+To code subsets of $\mathbb Z$ by subsets of $\omega$, use the
+bijection $\zeta:\mathbb Z\to\omega$ given by
+$\zeta(n)=2n$ for $n\geq0$ and $\zeta(n)=-2n-1$ for $n<0$.
+
+\subsection{Partial maps and recursion categories}\label{sec:partial}
+A partial function $f:X\rightharpoonup Y$ is a function
+$D_f\to Y$ with $D_f\subseteq X$. Its source is $X$ and its
+domain of definition is $D_f$. Its restriction $\overline f:X\rightharpoonup X$
+is the identity on $D_f$. Composition $gf$ applies $f$ first;
+its domain is $\{x\in D_f:f(x)\in D_g\}$.
+
+Abstractly, a restriction category assigns $\overline f:X\to X$
+to each arrow $f:X\to Y$, subject to
+\[
+ f\overline f=f,\qquad
+ \overline f\,\overline g=\overline g\,\overline f,\qquad
+ \overline{g\overline f}=\overline g\,\overline f,\qquad
+ \overline g f=f\overline{gf}.
+\]
+The middle two equations concern arrows with the same source; the
+last concerns composable $f:X\to Y$ and $g:Y\to Z$.
+An arrow is \emph{total} if $\overline f=1_X$.
+A \emph{restriction idempotent}, or \emph{domain}, is an arrow
+$e:X\to X$ with $e=\overline e$. Domains are ordered by
+$e\leq d$ when $ed=e$. For parallel arrows, the restriction order
+is $f\leq g$ when $f=g\overline f$; for partial functions this
+means that $g$ extends $f$.
+
+We use the restriction-product formulation of a $P$-category
+\cite[Proposition 4.5]{CL3}. A binary near product
+$X\boxtimes Y$ has total projections $p_X,p_Y$ and, for every
+$f:A\to X$ and $g:A\to Y$, a unique arrow
+$\langle f,g\rangle:A\to X\boxtimes Y$ satisfying
+\[
+ p_X\langle f,g\rangle=f\overline g,\qquad
+ p_Y\langle f,g\rangle=g\overline f,\qquad
+ \overline{\langle f,g\rangle}=\overline f\,\overline g.
+\]
+Here angle brackets pair arrows; in \eqref{eq:cantor-pair} they
+pair natural numbers. Set $\Delta_X=\langle1_X,1_X\rangle$ and
+$f\boxtimes g=\langle fp_X,gp_Y\rangle$.
+The total arrows form a category $\Tot(\C)$, in which these are
+binary categorical products. No nullary product is assumed.
+
+A $P$-category is \emph{prodominical} if it has zero arrows,
+absorbing under composition, and $f\boxtimes0=0$ for every typed
+pair. These equations imply $\overline0=0$. A nonzero object has
+$1_X\ne0$; the category is nontrivial if it has such an object.
+An \emph{isotype} is a nonempty category in which every two objects
+are isomorphic. A \emph{Turing morphism} is an arrow
+$\tau:W\boxtimes X\to Y$ such that, for every object $V$ and
+every $f:V\boxtimes X\to Y$, there is a total $g:V\to W$ with
+\[
+ f=\tau(g\boxtimes1_X).
+\]
+A \emph{recursion category} is a prodominical $P$-category that is
+an isotype and has a Turing morphism \cite[\S9]{Heller}.
+
+Di Paola--Heller's dominical convention additionally requires
+$f\boxtimes g=0$ only when $f=0$ or $g=0$ and characterizes total
+arrows by $fh=0\Rightarrow h=0$ for every composable $h$
+\cite[Definitions 2.0--2.3]{DPH}. The $P$-recursion categories
+of Di Paola--Montagna need not be dominical. We retain this
+distinction in the catalogue.
+
+A range of $f:X\to Y$ is a domain $r:Y\to Y$ such that $rf=f$
+and, for every parallel pair $u,v:Y\to Z$, the equality $uf=vf$
+implies $ur=vr$. Coproducts below are categorical binary coproducts
+in the partial-map category. They are distributive if the canonical map
+$(A\boxtimes X)+(A\boxtimes Y)\to A\boxtimes(X+Y)$ is an
+isomorphism. A functor preserves near products or coproducts when
+the corresponding canonical comparison maps are isomorphisms.
+
+Several properties distinguish the historical examples. A section of
+$f:X\to Y$ is an arrow $s:Y\to X$ with $fs=\overline s$ and
+$fsf=f$; \emph{choice} means that every arrow has a section.
+An arrow $f:X\to Y$ is a partial monomorphism if $fu=fv$ implies
+$\overline f u=\overline f v$ for every parallel $u,v:Z\to X$.
+\emph{Weak choice} means that every partial monomorphism is a
+partial isomorphism: it has $s:Y\to X$ with
+$sf=\overline f$ and $fs=\overline s$.
+An \emph{atom} is a nonzero total arrow $a:X\to Y$ such that
+$ea$ is either $0$ or $a$ for every domain $e$ on $Y$.
+A \emph{constant} is a total $c:X\to Y$ with $cu=cv$ for every
+pair of total arrows $u,v:Z\to X$. There are \emph{enough atoms}
+(respectively, constants) if precomposition by all atoms
+(respectively, constants) with target $Y$ separates arrows out of
+$Y$ \cite[\S\S6,8--9]{DPH}.
+
+A nonzero domain $e$ is \emph{connected} if a disjoint decomposition
+$e=e_0\vee e_1$ into domains forces one summand to be zero.
+Here $\vee$ is the domain join when the indicated join exists.
+The connected-domain separation condition says that $fh=gh$ for
+all connected domains $h$ on the common source implies $f=g$.
+This is the condition called \emph{locally connected} in the cited
+recursion-category literature \cite[\S4]{DPM}.
+
+The catalogue is organized around the following data: its objects and arrows; equality;
+the near product and Turing morphism; domains and ranges; choice,
+coproducts, and connectedness; and a specified coalgebraic representation.
+The initial catalogue below includes the constructions of
+Di Paola--Heller, Montagna, Montagna--Sorbi, and Di Paola--Montagna.
+
+\section{The catalogue}
+\subsection{Numerical and higher-recursion examples}
+
+\paragraph{The classical category $\mathcal T$.}
+Di Paola--Heller's objects are countably infinite sets with recursive
+structures, drawn from a product-closed family; arrows are partial
+recursive maps in those structures, with extensional equality
+\cite[Theorem 4.3, pp.~601--602]{DPH}. Positive finite powers of $\N$
+give a concrete equivalent presentation. Pairing gives the near product,
+and a universal partial recursive function together with the parameter
+theorem gives a Turing morphism. The domains are recursively enumerable
+sets. Numerical search gives range sections.
+
+\paragraph{Oracle relatives $\mathcal T_A$.}
+For a fixed $A\subseteq\N$, replace partial recursive maps by partial
+$A$-recursive maps on positive finite powers of $\N$. Equality remains
+extensional. The oracle universal machine and parameter theorem prove
+the recursion axioms by the same argument. These categories have ranges
+and sections obtained by dovetailing relative to $A$.
+
+These concrete presentations detect Turing reducibility exactly:
+\begin{equation}\label{eq:oracle-order}
+ \mathcal T_A\subseteq\mathcal T_B
+ \quad\Longleftrightarrow\quad A\leq_T B.
+\end{equation}
+The inclusion means identical objects and inclusion of the actual
+partial functions. One implication follows by simulating $A$-queries
+using $B$. Conversely, the characteristic function of $A$ is an arrow
+of $\mathcal T_A$ and hence, under the inclusion, is $B$-recursive.
+Equation~\eqref{eq:oracle-order} concerns these numerical presentations;
+classification under arbitrary abstract equivalence is a further question.
+
+\paragraph{The arithmetical hierarchy.}
+For $n\geq1$, Di Paola--Heller construct
+$\mathcal T(\Sigma^0_n)$, whose arrows have lightface $\Sigma^0_n$
+graphs in the chosen numerical structures. The domains are
+$\Sigma^0_n$ sets, and the decidable domains are $\Delta^0_n$ sets.
+Their enumeration argument supplies a Turing morphism
+\cite[\S4.6, Example 4, p.~606]{DPH}.
+For fixed numerical codings these are also the oracle categories
+$\mathcal T_{0^{(n-1)}}$: a functional graph is c.e. in the indicated
+jump exactly when its partial function is computable in that jump.
+
+\paragraph{Analytical examples on integers.}
+Di Paola--Heller construct $\mathcal T_\omega(\Pi^1_1)$ and state
+the corresponding construction of $\mathcal T_\omega(\Sigma^1_2)$
+\cite[\S4.6, Example 5, pp.~606--607]{DPH}. Arrows are partial
+numerical functions whose graphs lie in the indicated lightface
+pointclass. The construction of a universal functional relation uses
+single-valuedness results for those pointclasses. The subscript
+$\omega$ specifies that the free arguments are integers.
+This is a direct entry point for effective descriptive set theory:
+uniformization and universal relations supply the Turing morphism.
+
+\paragraph{Admissible recursion.}
+For admissible $\alpha$, Di Paola--Heller describe
+$\mathcal T^\alpha$, using carriers that are copies of $L_\alpha$
+with $\alpha$-recursive structures and partial
+$\alpha$-recursive maps \cite[\S4.6, Example 7, p.~608]{DPH}.
+The admissible set and its coding belong to the catalogue entry.
+When $L_\alpha$ is countable, an external integer coding is available;
+the coding and the internal notion of $\alpha$-recursiveness are
+separate data.
+
+\subsection{Valid syntactic categories}
+
+\paragraph{Montagna's $S$.}
+The objects are generated from $\N$ by binary products and disjoint
+sums. Arrows are program indices modulo a single PA-provable universally
+quantified equality of partial computations
+\cite[pp.~105--108]{Montagna}. This is the case $S_{\mathrm{PA}}$
+of the following construction.
+
+\paragraph{Di Paola--Montagna's $S_T$.}
+Let $T$ be a consistent recursively enumerable extension of PA. With
+the same object types, indices $e,d:A\rightharpoonup B$ define the
+same arrow when
+\begin{equation}\label{eq:uniform}
+ T\vdash\forall x\in A\,
+ \bigl[(\varphi_e(x)\downarrow\leftrightarrow\varphi_d(x)\downarrow)
+ \land(\varphi_e(x)\downarrow\Rightarrow
+                \varphi_e(x)=\varphi_d(x))\bigr].
+\end{equation}
+The product and sum types use the fixed effective numerical codings.
+The equality in \eqref{eq:uniform} is a congruence: substitution into
+one uniform proof proves equality after precomposition, and the
+arithmetized composition equations prove equality after postcomposition.
+The structural identities and the parameter theorem have PA-provable
+versions, so they pass to the quotient.
+
+The resulting category is a $c^+$-$P$-recursion category, with ranges,
+choice, and compatible distributive coproducts
+\cite[\S2, p.~646]{DPM}. It is atomless and has insufficient constants.
+If $T$ is $\Sigma^0_1$-sound, the nonzero connected domains are
+exactly the provable singleton domains; otherwise there are no nonzero
+connected domains. No $S_T$ is locally connected
+\cite[Theorem 4.3 and Corollary 4.4, pp.~657--658]{DPM}.
+
+The pointwise constructions $S'$ and $S'_T$ use a different equivalence
+relation. Their proposed composition fails to be independent of
+representatives \cite{Pointwise}; they are excluded from the catalogue.
+The uniform constructions $S$ and $S_T$ remain included.
+
+\subsection{Montagna--Sorbi's operator categories}
+
+We use the interleaving identification $\Baire^2\cong\Baire$
+from Section~\ref{sec:codes}.
+An ordinary partial recursive operator can output a partial numerical
+function. A partial $\Baire$-operator is defined only when that
+output is total.
+
+\paragraph{$\mathcal B$.}
+This one-object category has carrier $\Baire$ and the extensional
+partial recursive $\Baire$-operators as arrows
+\cite[Definition 2.1, p.~1027]{MS}. Its domains are exactly the
+lightface $\Pi^0_2$ subsets of Baire space. It does not have ranges for
+all arrows, and weak choice fails. It has atoms but not enough atoms
+\cite[Propositions 2.1--2.3 and Lemma 2.2, pp.~1027--1030]{MS}.
+
+\paragraph{$\mathcal B_o$.}
+The object is again Baire space. Arrows are all partial continuous maps
+with $G_\delta$ domains, with extensional equality
+\cite[Lemma 2.5 and Definition 2.2, pp.~1030--1031]{MS}.
+This category contains $\mathcal B$, has enough atoms, and still lacks
+ranges and weak choice \cite[Proposition 2.4]{MS}.
+
+Both categories are recursion categories
+\cite[Proposition 3.1, p.~1032]{MS}. If $(\Phi_e)$ enumerates the
+partial recursive $\Baire$-operators,
+a common Turing morphism is
+\[
+ \tau(f\oplus g)=\Phi_{f(0)}(f^+\oplus g).
+\]
+A total compiler prefixes an operator index to the parameter function.
+The passage from $\mathcal B$ to $\mathcal B_o$ permits arbitrary
+real parameters and continuous compilers.
+
+For subsets $D,E\subseteq\Baire$, Wadge reducibility
+$D\leq_W E$ means that $D=u^{-1}(E)$ for some total continuous
+$u:\Baire\to\Baire$. A $G_\delta$ set is $G_\delta$-complete
+if every $G_\delta$ subset of Baire space reduces to it in this sense.
+Complete domains in $\mathcal B_o$ are the $G_\delta$-complete sets
+under Wadge reducibility \cite[Remark 3.1, p.~1034]{MS}.
+Some domains of $\mathcal B$ become complete in $\mathcal B_o$
+without being complete in $\mathcal B$
+\cite[Corollary 3.4, pp.~1034--1035]{MS}. Thus the comparison changes
+the admitted reductions, a fact that must be recorded alongside any
+coalgebraic representation.
+
+\paragraph{The atomless category $\mathcal N$.}
+Let
+\[
+ X=\{f\in\N^{\N}:\text{every partial recursive }\varphi_e\subseteq f
+                         \text{ has finite domain}\}.
+\]
+For $\Phi\in\mathcal B$, let $\Phi^X$ retain precisely those inputs
+in $X$ whose outputs lie in $X$. The arrows of $\mathcal N$ form the
+category \emph{generated} by these restricted operators. The assignment
+$\Phi\mapsto\Phi^X$ need not preserve composition. Montagna--Sorbi
+prove a normal form $P_1\Phi^X$ and then establish that $\mathcal N$
+is a recursion category \cite[Definitions 4.1--4.2, Lemma 4.3,
+Proposition 4.1, pp.~1038--1040]{MS}. It is atomless and has diagonal
+ranges. Its creativity notion relative to atoms does not imply
+completeness \cite[Theorems 4.1--4.2]{MS}.
+
+Its carrier has a useful topological description.
+\begin{proposition}\label{prop:dense}
+The set $X$ defining $\mathcal N$ is a dense $G_\delta$ subset of
+Baire space.
+\end{proposition}
+\begin{proof}
+For each $e$ such that $\dom\varphi_e$ is infinite, the set $C_e$ of
+total extensions of $\varphi_e$ is closed. Given a basic cylinder,
+choose an argument in $\dom\varphi_e$ beyond its specified coordinates
+and extend the cylinder by a different value there. Hence $C_e$ is
+nowhere dense. The complement of the union of these countably many
+$C_e$ is $X$. The Baire category theorem proves density.
+\end{proof}
+This is a boldface $G_\delta$ description. Its indexing condition is
+not an effective enumeration of open complements.
+
+\subsection{Equivariant and existence constructions}
+
+Let $G$ be a finite group and $\C$ a $+$-dominical recursion category
+with equality, in the terminology of Di Paola--Heller: coproducts
+have the required compatibility with the near product, and each
+diagonal has a range. In $\C^G$,
+write $G\otimes X$ for the free $G$-object, formed from the $G$-indexed
+coproduct of $X$. The full subcategories on free objects $G\otimes X$
+and on objects $(G\otimes X)+X$, with trivial action on the last
+summand, are denoted $\C_1^G$ and $\C_0^G$. Both are recursion
+categories \cite[Theorem 7.9.9, pp.~620--621]{DPH}.
+These entries retain the finite group and the chosen base category.
+
+Heller's existence theorem applies to uniformly generated isotypical
+$B^\#$-subcategories of total maps in locally connected iteration categories
+\cite[Theorem 9.2]{Heller}. His examples include set-based,
+cocommutative-coalgebra, functor-category, and frame-relative
+constructions \cite[\S10]{Heller}. The generating data and iteration
+closure specify the resulting recursion category.
+
+Lengyel's coalgebra construction uses partial morphisms of
+$F$-coalgebras as an ambient $P$-category \cite{Coalgebras}.
+The corrected relative existence theorem is as follows
+\cite[Theorem 6.4]{Corrections}: let $\C,\mathcal D$ be iteration
+categories, with $\mathcal D$ separated, and let
+$L:\C\to\mathcal D$ be a faithful iteration functor. Every uniformly
+generated isotypical $B^\#$-subcategory $\mathcal B$ of the total
+maps of $\C$ has a recursion-category completion $\operatorname{Tur}(\mathcal B)$.
+Here separated is the connected-domain separation condition called
+locally connected in Heller's terminology.
+
+In ZFC, if $F:\Set\to\Set$ weakly preserves pullbacks and
+$\Coalg(F)$ has binary products, its partial maps with subcoalgebra
+domains form a relatively separated iteration category. The relative
+theorem therefore gives recursion categories from its uniformly
+generated isotypical $B^\#$-subcategories of total maps
+\cite[Theorem 10.1]{Corrections}. These are construction schemes:
+an entry for an individual example includes the actual functor,
+isotypical object, generators, and required preservation hypotheses.
+
+\section{Representations and their 2-categorical comparisons}
+
+For an endofunctor $F:\Set\to\Set$, an $F$-coalgebra is a map
+$c:X\to FX$. A coalgebra morphism from $(X,c)$ to $(Y,d)$ is a
+function $u:X\to Y$ satisfying $du=(Fu)c$; these form
+$\Coalg(F)$. A subcoalgebra is a subset $D\subseteq X$ with a
+coalgebra structure making its inclusion a coalgebra morphism.
+A partial coalgebra morphism $(X,c)\rightharpoonup(Y,d)$ consists
+of a subcoalgebra domain $D\hookrightarrow X$ and a total coalgebra
+morphism $D\to Y$. Composition pulls back the second domain along
+the first map. We use this construction when subcoalgebra inclusions
+are stable under these pullbacks and it supplies the restriction,
+zero, and binary near-product structures specified below. Write
+$\mathcal A_F=\Par(\Coalg(F))$. For constant functors and the
+Moore functor used in Section~4, domains and composition have this form.
+
+A representation is a faithful functor $J:\R\to\mathcal A_F$
+that preserves restrictions and zeros and has canonical total
+isomorphisms
+\[
+ c^J_{X,Y}=\langle Jp_X,Jp_Y\rangle:
+ J(X\boxtimes Y)\longrightarrow JX\boxtimes JY.
+\]
+Thus preservation of products means preservation through their
+canonical comparison maps. Their associativity and symmetry
+compatibilities follow from the product equations. One may also
+require preservation of distributive binary coproducts, of ranges,
+or of both; the same requirements are imposed on every functor
+in a given comparison. Range preservation means
+$J(\operatorname{ran}f)=\operatorname{ran}(Jf)$ whenever these
+ranges are required. A Turing morphism remains universal for the
+represented arrows by applying $J$ to its factorization equation.
+
+For such functors $P,Q:\C\to\mathcal D$, a
+\emph{structure-compatible natural transformation}
+$\theta:P\Rightarrow Q$ has total components
+$\theta_X:PX\to QX$, satisfies
+$Qf\,\theta_X=\theta_Y\,Pf$ for every $f:X\to Y$, and obeys
+\begin{equation}\label{eq:product-compatibility}
+ c^Q_{X,Y}\theta_{X\boxtimes Y}
+       =(\theta_X\boxtimes\theta_Y)c^P_{X,Y}.
+\end{equation}
+When coproduct preservation is required, put
+$d^P_{X,Y}=[Pi_X,Pi_Y]:PX+PY\to P(X+Y)$ and require
+$\theta_{X+Y}d^P_{X,Y}=d^Q_{X,Y}(\theta_X+\theta_Y)$.
+These equations use the canonical comparisons, so they are stable
+under vertical composition and whiskering.
+
+To compare different catalogue entries as well as representations of
+one entry, use the following construction.
+\begin{definition}\label{def:global}
+An object is a triple $(\R,F,J)$ as above. A 1-cell
+$(\R,F,J)\to(\mathcal S,G,J')$ is a triple $(H,K,\kappa)$ consisting
+of structure-preserving functors $H:\R\to\mathcal S$ and
+$K:\mathcal A_F\to\mathcal A_G$, with an invertible
+structure-compatible natural transformation
+$\kappa:KJ\Rightarrow J'H$. A 2-cell to $(H',K',\kappa')$ is a pair
+of structure-compatible natural transformations with total components,
+$\alpha:H\Rightarrow H'$ and $\eta:K\Rightarrow K'$, satisfying
+\[
+ (J'\alpha)\kappa=\kappa'(\eta J).
+\]
+\end{definition}
+In particular, the component
+$\kappa_X:K(JX)\to J'(HX)$ is a total isomorphism, and its
+naturality equation is
+$J'(Hf)\kappa_X=\kappa_YK(Jf)$ for $f:X\to Y$.
+The equation defining a 2-cell is an equality of transformations
+$KJ\Rightarrow J'H'$. The square being compared is
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+\R\arrow[r,"H"]\arrow[d,"J"'] & \mathcal S\arrow[d,"J'"]\\
+\mathcal A_F\arrow[r,"K"'] & \mathcal A_G.
+\end{tikzcd}
+\]
+Composition is pasting: for a second 1-cell $(H_2,K_2,\kappa_2)$,
+the composite has functors $H_2H,K_2K$ and comparison
+$(\kappa_2H)(K_2\kappa)$. The 2-category laws follow from those
+of functors and natural transformations. Restricting to a fixed
+$\R$, with $H=\id_{\R}$ and $\alpha=\id$, recovers
+$\Rep(\R)$ of \cite{Comparisons}.
+
+An equivalence in $\Rep(\R)$ includes an equivalence of the whole
+ambient targets. An equivalence of the categories of represented arrows
+is weaker. In fact, all faithful represented images of the same source,
+with source-object tags retained, are equivalent to that source.
+Classification of representations therefore requires the ambient
+category or additional effective and topological data.
+
+\subsection{Classification for constant targets}
+For a set $E$, coalgebras of the constant functor $F_E(X)=E$ are
+labelled sets $a:X\to E$. Their partial-map category $\Pfn_E$ has
+label-preserving partial functions as arrows. Products of total
+coalgebras are fibre products over $E$. A representation
+$J:\R\to\Pfn_E$ has fibre functors $J_e:\R\to\Pfn$ for $e\in E$.
+
+\begin{theorem}\label{thm:constant}
+Let $J:\R\to\Pfn_E$ and $J':\R\to\Pfn_D$ be representations with
+the same specified preservation requirements. They are equivalent
+in $\Rep(\R)$ if and only if there is a bijection $\sigma:E\to D$
+and structure-compatible natural isomorphisms
+$J_e\cong J'_{\sigma(e)}$ for all $e\in E$.
+\end{theorem}
+\begin{proof}
+A restriction equivalence $K:\Pfn_E\simeq\Pfn_D$ restricts to an
+equivalence of total-map categories $\Set/E\simeq\Set/D$.
+It preserves the terminal object of these total-map categories and
+its subobject lattice. The latter is $\mathcal P(E)$ or
+$\mathcal P(D)$. Atoms are precisely singleton labels, so $K$
+induces a bijection $\sigma:E\to D$.
+
+Every labelled set is the coproduct of its singleton labelled elements.
+Preservation of these coproducts identifies $K$, naturally on total
+maps, with relabelling along $\sigma$. A partial map factors as the
+partial inverse of its domain inclusion followed by a total map.
+Restriction preservation extends this identification to partial maps.
+Thus $KJ\cong J'$ gives exactly the displayed fibre isomorphisms.
+Conversely, relabelling along $\sigma$ is a structured equivalence,
+and the fibre isomorphisms assemble to its required comparison with
+$J'$. The inverse relabelling gives the inverse 1-cell.
+\end{proof}
+
+The label set, including labels unused by the image, is therefore an
+ambient invariant. The theorem classifies the constant-target part
+of $\Rep(\R)$; comparisons into larger coalgebra categories supply
+additional 1-cells.
+
+\section{Countable representations and integer-set coalgebras}
+\subsection{A countable representation theorem}
+
+\begin{proposition}\label{prop:countable}
+Every nontrivial prodominical $P$-category with countably many objects
+and arrows has a faithful representation in $\Pfn_E$ with $E$
+countable and every represented carrier countable. It preserves
+restrictions, zeros, and binary near products, and reflects totality.
+If distributive binary coproducts exist, such a representation can
+also preserve them.
+\end{proposition}
+\begin{proof}
+Split restriction idempotents: the objects of the resulting category
+$\mathcal K$ are $(X,e)$ with $e=\overline e$, and arrows satisfy
+$f=dfe$. Its identity at $(X,e)$ is $e$, and it is countable.
+Regard each original object $X$ as $(X,1_X)$.
+Use its nonzero objects $A$ as labels. The $A$-fibre of $J_0X$ is
+the set of total $h:A\to X$; define $J_0f(h)=fh$ precisely when
+$fh$ is total.
+
+A total composite has total inner factor, so this rule respects
+composition and definedness. The identity
+$\overline{fh}=\overline{\overline f h}$ proves restriction
+preservation; a zero composite cannot be total on nonzero $A$.
+Total maps into a restriction product are exactly pairs of total maps
+with the same source, proving product preservation.
+To distinguish $f$ from $g$, split $\overline f=mp$.
+If $f\ne0$, $m$ is a generalized element on which $J_0f$ is
+defined. Equality $J_0f=J_0g$ would give $fm=gm$, hence
+$f=g\overline f$. Reversing the roles gives $g=f\overline g$,
+and therefore $f=g$. The case $f=0$ follows from the reverse
+argument. This proves faithfulness. Restriction preservation and
+faithfulness give reflection of totality. All fibres and labels
+are countable.
+
+Suppose now that binary coproducts are distributive. The split category
+$\mathcal K$ inherits these coproducts and their distributivity. A
+\emph{summand domain} on $A$ is the restriction idempotent that is the
+identity on one side of a decomposition $A\cong A_0+A_1$ and zero on
+the other. Write $B(A)$ for the set of these idempotents.
+
+We first record the decomposition property used below. A total map
+$h:A\to X+Y$ decomposes $A$ into the inverse images of the two
+summands. Indeed, put $q_0=[1_X,0]$, $q_1=[0,1_Y]$, and
+$e_i=\overline{q_i h}$. Distributivity gives the total decision map
+\[
+ d=(p_A+p_A)\delta^{-1}\langle1_A,h\rangle:A\longrightarrow A+A,
+\]
+where $\delta:(A\boxtimes X)+(A\boxtimes Y)\to
+A\boxtimes(X+Y)$ is the distributivity isomorphism. If
+$e_i=j_i p_i$ are splittings in $\mathcal K$, then
+$[j_0,j_1]:A_0+A_1\to A$ has inverse $(p_0+p_1)d$.
+To check the inverse identities, let $k_i:A\to A+A$ be the
+injections, $r_0=[1_A,0]$, $r_1=[0,1_A]$, and
+$\nabla=[1_A,1_A]$. The product equations and naturality of
+distributivity give
+\[
+ \nabla d=1_A,\qquad r_i d=e_i,\qquad
+ (h+h)d=(i_X+i_Y)h.
+\]
+For the middle identity, for example,
+$r_0(p_A+p_A)=p_A(1_A\boxtimes q_0)\delta$; the two sides
+agree on each summand. For the last, use
+$(h\boxtimes1)\langle1_A,h\rangle=\Delta h$ and check
+$(p_{X+Y}+p_{X+Y})\delta^{-1}\Delta=i_X+i_Y$ on the
+two injections. Applying $q_0+q_1$ gives
+$(q_0h+q_1h)d=h$. Since $h$ is total, the restriction axioms
+give $(e_0+e_1)d=d$. They also give $de_i=k_i e_i$ from
+$\overline{r_i}=k_i r_i$ and $r_i d=e_i$.
+Consequently
+\[
+ [j_0,j_1](p_0+p_1)d=[e_0,e_1]d
+       =\nabla(e_0+e_1)d=1_A.
+\]
+The reverse composite is the identity on each summand because
+$dj_i=k_i j_i$ and $p_i j_i=1_{A_i}$.
+This proves the decomposition used in the germ construction
+of \cite[Appendix A]{Representation}.
+Pulling one decomposition back along the injections of another gives
+a common four-part decomposition. Consequently $B(A)$ is a Boolean
+algebra: meet is composition, complement exchanges the two summands,
+and join takes their union. A summand of a summand is again a summand.
+
+Use every pair $(A,U)$, where $A$ is nonzero and $U$ is an
+ultrafilter on $B(A)$, as a label. An arrow $h:A\to X$ is \emph{admissible at $U$}
+if $e\leq\overline h$ for some $e\in U$. Two admissible arrows
+represent the same germ when
+\[
+ [h]_U=[k]_U
+ \quad\Longleftrightarrow\quad
+ \text{there is }e\in U\text{ with }
+ e\leq\overline h\,\overline k\text{ and }he=ke.
+\]
+Intersections of supporting members of $U$ prove transitivity, so
+this is an equivalence relation. Let the $(A,U)$-fibre of $JX$ be
+the set of these germs, and define the partial action by
+\[
+ Jf([h]_U)=[fh]_U
+ \qquad\text{if }fh\text{ is admissible at }U.
+\]
+If $h$ and $k$ agree on a member of $U$, intersect that member with
+one supporting $fh$. On the intersection, $fh$ and $fk$ are defined
+and equal. Thus both definedness and value are independent of the
+representative. Admissibility of $gfh$ implies that of $fh$, which
+proves functoriality. The identity
+$\overline{fh}=\overline{\overline f h}$ proves preservation of
+restrictions, and a proper ultrafilter contains no zero member, so
+$J0$ is nowhere defined.
+
+At each label, pairing gives a bijection
+\[
+ J(X\boxtimes Y)_{(A,U)}
+ \longrightarrow JX_{(A,U)}\times JY_{(A,U)},
+ \qquad [h]_U\longmapsto([p_Xh]_U,[p_Yh]_U).
+\]
+Its inverse pairs representatives after intersecting their supporting
+members. These bijections commute with postcomposition and preserve
+projections and diagonals. For a germ into $X+Y$, restrict a
+representative to a supporting summand $e\in U$ and apply the
+decomposition property. Its two inverse-image summands have disjoint
+domains whose join is $e$. Exactly one belongs to $U$, so the germ
+factors through exactly one coproduct injection. The two resulting
+images are disjoint: applying $[1_X,0]$ to an equality between them
+would make a supported arrow zero. Hence
+$J(X+Y)\cong JX\amalg JY$, with the images of the injections as
+coproduct injections.
+
+To prove faithfulness, suppose $Jf=Jg$ and split
+$\overline f=mp$, with $m:A\to X$ total. If $f\ne0$, then $A$
+is nonzero and $fm$ is total. At every ultrafilter $U$ on $B(A)$,
+equality of the two represented partial functions supplies some
+$e\in U$ such that
+\[
+ e\leq\overline{gm},\qquad fme=gme.
+\]
+These agreement domains have a finite subfamily whose join is $1_A$.
+Otherwise their complements would have the finite intersection
+property and would extend to an ultrafilter meeting none of them.
+Refine the finite cover to a disjoint summand partition. Its
+injections are jointly epimorphic, so $fm=gm$, and hence
+$f=g\overline f$. This equation also holds when $f=0$.
+Interchanging $f$ and $g$ gives equality by antisymmetry of the
+restriction order. Thus $J$ is faithful.
+
+Each fibre is countable because its germs are represented by arrows
+of $\mathcal K$. For each unequal parallel pair $f,g$, choose one
+label at which $Jf$ and $Jg$ differ, and retain just these labels.
+There are countably many pairs. The restricted functor remains
+faithful, and all the preservation arguments above apply separately
+at each retained label. Its carriers are countable unions of
+countable fibres, as required.
+\end{proof}
+
+Consequently the classical, fixed-oracle, lightface arithmetical and
+analytical, syntactic, and recursive-operator entries with countable
+arrow sets have countable representations. This conclusion concerns
+cardinality. An effective presentation must additionally specify
+computable structure and represented arrow maps.
+
+\subsection{Binary observations of integer subsets}
+Take $M(Y)=2\times Y^{\{+,-\}}$. For $A\subseteq\Z$, let $Q_A$
+have carrier $\Z$, output $\chi_A$, and transitions $n\mapsto n+1$
+and $n\mapsto n-1$. Call $A$ aperiodic if $A+k=A$ implies $k=0$.
+
+\begin{proposition}\label{prop:shift}
+Every coalgebra morphism $Q_A\to Q_B$ is a translation $n\mapsto n+k$
+with $B=A+k$. For aperiodic $A,B$, their translation classes therefore
+classify the $Q_A$ up to isomorphism, and between two such coalgebras there is at
+most one morphism. Each $Q_A$ has no proper nonempty subcoalgebra.
+\end{proposition}
+\begin{proof}
+Commutation with both transitions forces $h(n)=h(0)+n$ for every
+integer $n$. Preservation of output says
+$\chi_B(n+h(0))=\chi_A(n)$, exactly the displayed translation
+condition. Two allowable translations differ by a period of $A$.
+A nonempty transition-closed subset of $\Z$ contains every integer.
+\end{proof}
+
+The same argument classifies all nonempty transitive binary systems
+with inverse transitions. Put
+$\operatorname{Stab}(A)=\{k\in\Z:A+k=A\}$.
+\begin{proposition}\label{prop:transitive}
+A nonempty binary Moore coalgebra with mutually inverse transitions
+and no proper nonempty subcoalgebra is isomorphic to
+\[
+ Q(H,A)=(\Z/H,o_A,\delta_+,\delta_-),
+ \qquad H\leq\operatorname{Stab}(A),
+\]
+where $A\subseteq\Z$ and $o_A:\Z/H\to2$ is given by $o_A(n+H)=\chi_A(n)$,
+and the transitions add or subtract $1$. The containment
+$H\leq\operatorname{Stab}(A)$ makes this output well defined.
+Two such coalgebras are
+isomorphic exactly when their subgroups $H$ agree and their observation
+sets are integer translates. Moreover,
+\[
+ \operatorname{End}(Q(H,A))=\operatorname{Aut}(Q(H,A))
+       \cong\operatorname{Stab}(A)/H.
+\]
+\end{proposition}
+\begin{proof}
+The inverse transitions define a $\Z$-action. Its orbits are
+subcoalgebras, so the action is transitive. Choose a state $q$;
+its stabilizer is $H$, and let $A$ consist of the integers $n$ for
+which the output at $n\cdot q$ is $1$. This identifies the carrier
+with $\Z/H$ and implies $H\leq\operatorname{Stab}(A)$.
+Changing the chosen state translates $A$ and leaves $H$ unchanged.
+An equivariant map between two transitive $\Z$-sets is determined
+by the image of the zero coset. For an isomorphism the stabilizers
+must agree; output preservation gives exactly the translation
+condition. For an endomorphism the allowable cosets are
+$\operatorname{Stab}(A)/H$, and every such translation is invertible.
+\end{proof}
+
+Thus the rigid systems in this class have $H=\operatorname{Stab}(A)$.
+They are the shift orbits of integer subsets, with finite cycles for
+periodic subsets and infinite orbits for aperiodic subsets.
+
+For a countable label set choose $E\subseteq\N$ and put
+$A_e=\{0,e+1\}$. These sets are aperiodic and pairwise nontranslate.
+For a labelled set $(X,a)$ define $\Phi(X)=X\times\Z$, with
+\[
+ o(x,n)=\chi_{A_{a(x)}}(n),\qquad
+ \delta_+(x,n)=(x,n+1),\quad \delta_-(x,n)=(x,n-1).
+\]
+For a label-preserving partial function $f:D\to Y$, put
+$\Phi(f)=f\times\id_{\Z}$ with domain $D\times\Z$.
+
+\begin{theorem}\label{thm:integer}
+The functor
+$\Phi:\Pfn_E\to\Par(\Coalg(M))$ is fully faithful and preserves
+restrictions, zeros, coproducts, and all coalgebra products indexed
+by nonempty sets on total maps, hence binary near products. Composing it with the
+representation in Proposition~\ref{prop:countable} gives a faithful
+countable coalgebraic representation with binary observations.
+\end{theorem}
+\begin{proof}
+A subcoalgebra of $X\times\Z$ is $D\times\Z$ because both
+translations are available. A morphism on each copy of $\Z$ lands
+in one target copy; Proposition~\ref{prop:shift} and the chosen
+markers force preservation of its label and integer phase. It is
+therefore exactly $f\times\id$ for a labelled partial function $f$.
+This proves full faithfulness and the assertions about domains and zeros.
+
+For a family $(X_i,a_i)_{i\in I}$ with $I\ne\varnothing$, put
+\[
+ \prod_E X_i=\{(x_i)\in\prod_{i\in I}X_i:
+                     a_i(x_i)\text{ is independent of }i\}.
+\]
+Its label is this common value. The coalgebra product of the
+$\Phi(X_i)$ is $(\prod_E X_i)\times\Z$. To verify the universal property, take
+any cone of total coalgebra maps into the factors. At a state of its
+vertex, all cone components have the same output after every input
+word. In the image objects these outputs determine the marker label
+and integer phase, so both agree in every coordinate. The component
+maps thus pair uniquely into the stated object and commute with the
+transitions. Coproducts are disjoint unions with inherited structure.
+The product description also respects partial domains.
+\end{proof}
+
+The marker systems are uniformly computable in $e$. The generalized
+element or germ construction may nevertheless give noneffective
+represented arrows. For an effective refinement, computability of
+these partial actions is a separate mathematical requirement.
+
+\begin{corollary}\label{cor:reals}
+A nontrivial prodominical $P$-category with at most $2^{\aleph_0}$
+objects and arrows has a faithful representation by coalgebras for
+$M(Y)=2\times Y^{\{+,-\}}$ whose states can be coded by subsets of
+$\N$. Restrictions, zeros, and binary near products are preserved;
+distributive binary coproducts can also be preserved when present.
+\end{corollary}
+\begin{proof}
+The proof of Proposition~\ref{prop:countable}, with an infinite
+cardinal $\kappa$ in place of countability, bounds labels and carriers
+by $\kappa$. In the germ construction there are at most $\kappa$
+parallel arrow pairs to separate, and every fibre has size at most
+$\kappa$. Apply this with $\kappa=2^{\aleph_0}$.
+For the marker construction choose distinct subsets $A_e\subseteq\N$
+containing $0$. Their minimum is $0$, so each is aperiodic as a subset
+of $\Z$, and distinct such sets cannot be translates. There are
+$2^{\aleph_0}$ choices. The proof of Theorem~\ref{thm:integer}
+applies to this family. Each resulting carrier has cardinal at most
+$2^{\aleph_0}$ and therefore injects into $\mathcal P(\N)$;
+transport its coalgebra structure along the injection.
+\end{proof}
+
+This applies to $\mathcal B_o$ as well as the countable-arrow examples.
+There are at most continuum many $G_\delta$ domains, and a continuous
+map from each such domain into Baire space is determined by its values
+on a countable dense subset. The resulting set-theoretic representation
+leaves the topological preservation problem in Section~6 to be solved.
+
+\section{Descriptive set theory and computation}
+\subsection{Sets as behaviors and as codes}
+
+There are several useful ways for sets of integers to enter a
+representation. A state may be an oracle, a function coded by its graph,
+or a complete coalgebra presentation coded as a real. Alternatively,
+an integer set may be the observable behavior of a state. These
+interpretations impose different conditions on morphisms.
+
+The graph coding of Section~\ref{sec:codes} identifies the carriers
+of $\mathcal B$, $\mathcal B_o$, and $\mathcal N$ with subspaces
+of $\mathcal G\subseteq2^\omega$. It also makes their operators
+partial maps between sets of graph codes, by conjugating with
+$f\mapsto\chi_f$. To obtain a coalgebraic representation one must
+choose observations and transitions for which the admitted arrows
+are coalgebra morphisms.
+
+\subsection{Binary and positive observations}
+The coalgebra
+\[
+ \mathcal P(\N)\longrightarrow2\times\mathcal P(\N),\qquad
+ S\longmapsto\bigl(\chi_S(0),\{n:n+1\in S\}\bigr)
+\]
+is final for $2\times-$ \cite[Corollary 2.3.6]{Jacobs}.
+For $c=(o,\delta):X\to2\times X$, its unique behavior map is
+$b(x)=\{n:o(\delta^n x)=1\}$. Every $S$ has a countable
+realization on $\N$, with successor transition and output $\chi_S$.
+A realization with computable initial state and total computable
+binary output and transition exists exactly when $S$ is recursive:
+iteration computes each membership bit, and the successor construction
+proves the converse. A finite-state realization exists exactly when
+the characteristic sequence is ultimately periodic.
+
+Positive information uses Sierpi\'nski space $\mathbb S$, whose open
+sets are $\varnothing,\{1\},\{0,1\}$. The Scott topology on
+$\mathcal P(\N)$ has basic opens $\{S:D\subseteq S\}$ for finite
+$D\subseteq\N$, and identifies this space with $\mathbb S^{\N}$.
+The same head and tail make it final for $\mathbb S\times-$ in
+topological spaces: the displayed behavior map is continuous because
+each positive membership test has open inverse image.
+More explicitly, an enumeration name for $S\subseteq\omega$ is a
+sequence $p\in\omega^\omega$ satisfying
+\[
+ S=\{n:(\exists k)\ p(k)=n+1\}.
+\]
+The value $0$ supplies a blank entry, and repetitions are allowed.
+The set has a computable enumeration name exactly when it is c.e.
+By contrast, the characteristic-function representation names $S$
+by its binary sequence $\chi_S$; that name is computable exactly
+when $S$ is recursive \cite{Scott,Pauly}.
+
+Enumeration operators supply another direct connection. A relation
+$W\subseteq\operatorname{Fin}(\N)\times\N$ defines
+\[
+ \Psi_W(S)=\{n:(D,n)\in W\text{ for some finite }D\subseteq S\}.
+\]
+These are Scott-continuous maps; conversely, a Scott-continuous map
+is determined by its values on finite sets and has such a form.
+For the converse, if $n\in\Psi(S)$, Scott openness of the inverse
+image of $\{T:n\in T\}$ supplies a finite $D\subseteq S$ with
+$n\in\Psi(D)$. Thus one can take
+$W=\{(D,n):n\in\Psi(D)\}$.
+To make effectiveness precise, code a finite set $D$ by
+$\ulcorner D\urcorner=\sum_{k\in D}2^k$, and code its rule for
+$n$ by $\langle\ulcorner D\urcorner,n\rangle$.
+If this set of rule codes is c.e., $\Psi_W$ is an enumeration
+operator: while enumerating $S$, output $n$ whenever all members
+of some enumerated rule's finite premise $D$ have appeared.
+The information supplied by observations thus distinguishes decision
+from semidecision.
+
+\subsection{Why observable behavior alone is insufficient}
+\begin{proposition}\label{prop:multiplicity}
+Let $\R$ be a nontrivial recursion category and
+$J:\R\to\Par(\Coalg(F))$ a faithful representation preserving
+totality. Suppose $F$ has a final coalgebra $B$. For every object $X$
+of $\R$, the behavior morphism $JX\to B$ is not monic in
+$\Coalg(F)$.
+\end{proposition}
+\begin{proof}
+An object $Q$ with monic map to a final object is subterminal: for
+any $u,v:P\to Q$, their composites into the final object agree,
+so $u=v$. Choose a Turing morphism $\tau:W\boxtimes U\to V$.
+The isotype supplies a total isomorphism
+$h:W\boxtimes U\to V$. It is nonzero since every object of a
+nontrivial isotype is nonzero. Apply the Turing property to $h$ and zero.
+It supplies distinct total endomorphisms $g_h,g_0:W\to W$, since
+equal parameter maps would give $h=0$. Their faithful images are
+distinct total coalgebra endomorphisms of $JW$. Hence $JW$ is not
+subterminal. Every $JX$ is isomorphic to $JW$, which proves the claim.
+\end{proof}
+
+The copies in Theorem~\ref{thm:integer} retain exactly this necessary
+kind of multiplicity: two states can have the same label and phase
+but different copy indices. Forgetting those indices can identify
+distinct represented arrows. Domains are also relevant: a partial
+map descends along a behavioral quotient only when its domain is
+saturated under behavioral equivalence \cite[Proposition 3.3]{Comparisons}.
+
+\subsection{Equivalence relations on coalgebra codes}\label{sec:moore-codes}
+Fix a finite or countable input alphabet $A$, with a chosen coding
+of its finite words. The space of pointed binary Moore coalgebras
+on carrier $\omega$ is
+\[
+ \mathcal C_A=2^\omega\times(\omega^\omega)^A\times\omega.
+\]
+A code $(o,(\delta_a)_{a\in A},x)$ specifies the output function
+$o:\omega\to2$, one total transition
+$\delta_a:\omega\to\omega$ for each $a$, and an initial state
+$x\in\omega$. All coordinates have their product topologies, with
+$\omega$ discrete. The behavior of this pointed system is
+\[
+ L_x=\{w\in A^*:o(\delta_wx)=1\}\in\mathcal P(A^*).
+\]
+For $w=a_1\cdots a_k$, set
+$\delta_w=\delta_{a_k}\cdots\delta_{a_1}$, so the letters are
+read from left to right; $\delta_\varepsilon=1$ for the empty word.
+The map $\beta:\mathcal C_A\to2^{A^*}$ sending a code to
+$\chi_{L_x}$ is continuous. To determine one output coordinate
+$w$, one reads only the initial state and the finitely many table
+entries encountered while following $w$.
+
+A bisimulation between two such systems is a relation on their
+carriers whose related states have equal outputs and whose
+$a$-successors are related for every $a\in A$. Related states
+have equal languages, by induction on word length. Conversely,
+the relation of having equal languages is a bisimulation, since
+equal languages have equal empty-word outputs and equal residual
+languages after each letter. Hence pointed bisimilarity is
+\[
+ E_A=(\beta\times\beta)^{-1}(\Delta_{2^{A^*}}).
+\]
+It is closed because $\beta$ is continuous and the diagonal of
+$2^{A^*}$ is closed. An equivalence relation on a standard Borel
+space is \emph{smooth} if a Borel map into $2^\omega$ reduces it
+to equality. Coding $A^*$ by integers makes $\beta$ such a
+reduction, so $E_A$ is smooth. For finite $A$, the behaviors
+realized by finite-state systems are exactly the regular languages
+\cite{RuttenAutomata}.
+
+For countable nondeterministic labelled transition systems,
+S\'anchez Terraf proves that bisimilarity is
+$\boldsymbol\Sigma^1_1$-complete \cite{Terraf}. Thus the chosen
+transition functor changes the descriptive complexity of behavioral
+classification. Isomorphism of presentations and equivalence of
+representations are separate equivalence relations.
+
+\subsection{Moore coalgebras and higher-type operators}\label{sec:higher-type}
+
+The finite-word behavior of a pointed Moore coalgebra also determines
+an operator on infinite input streams. Let $A$ be a nonempty countable
+alphabet. For a stream $\alpha\in A^\omega$, write
+$\alpha\upharpoonright n=\alpha(0)\cdots\alpha(n-1)$ for its
+prefix of length $n$, including the empty prefix when $n=0$.
+A pointed Moore coalgebra with output $o:X\to2$, transitions
+$\delta_a:X\to X$, and initial state $x\in X$ induces
+\begin{equation}\label{eq:moore-stream}
+ T_x:A^\omega\longrightarrow2^\omega,
+ \qquad T_x(\alpha)(n)=o(\delta_{\alpha\upharpoonright n}x).
+\end{equation}
+The zeroth output is $o(x)$, emitted before the first input is read.
+We call an operator $T:A^\omega\to2^\omega$ \emph{strictly causal}
+if, for all $\alpha,\gamma\in A^\omega$ and $n\in\omega$,
+\begin{equation}\label{eq:strict-causality}
+ \alpha\upharpoonright n=\gamma\upharpoonright n
+ \quad\Longrightarrow\quad T(\alpha)(n)=T(\gamma)(n).
+\end{equation}
+Thus the output at time $n$ depends only on the preceding $n$ inputs.
+Every $T_x$ is strictly causal, and every strictly causal operator is
+continuous for the product topologies: any finite set of output
+coordinates is determined by a sufficiently long finite input prefix.
+
+When $A=\omega$, the displayed operator has type
+$(\omega\to\omega)\to(\omega\to2)$. With numerical and Boolean
+values at type level zero and streams at level one, this is an operator
+of type level two. Each coordinate $\alpha\mapsto T_x(\alpha)(n)$
+is a Boolean-valued functional of type two. The coalgebra's output and
+transition maps give a state-based presentation of this operator.
+
+For the effective statements, take $A=\omega$ or
+$A=\{0,\ldots,k-1\}$ with $k\geq1$. An operator
+$T:A^\omega\to2^\omega$ is \emph{Type-2 computable} if one oracle
+algorithm, given $n$ and oracle access to $\alpha$, halts with output
+$T(\alpha)(n)$ for every $\alpha$ and $n$. Each such computation
+reads finitely many coordinates of its oracle. A \emph{computable
+Moore presentation} has carrier $\omega$, a computable output
+$o:\omega\to2$, a jointly computable transition map
+$(a,s)\mapsto\delta_a(s)$ from $A\times\omega$ to $\omega$,
+and a specified initial state in $\omega$.
+
+\begin{proposition}\label{prop:moore-realization}
+For every nonempty countable alphabet $A$, the strictly causal
+operators $A^\omega\to2^\omega$ are exactly the operators induced
+by pointed Moore coalgebras with countable state sets. If $A=\omega$
+or $A=\{0,\ldots,k-1\}$ with $k\geq1$, a strictly causal operator
+is Type-2 computable if and only if it has a computable Moore
+presentation.
+\end{proposition}
+\begin{proof}
+Strict causality of a Moore operator follows from
+\eqref{eq:moore-stream}. Conversely, let $T$ be strictly causal
+and choose $a_0\in A$. Use the countable state set $A^*$, initial
+state $\varepsilon$, and transitions and outputs
+\[
+ \delta_a(s)=sa,\qquad o(s)=T(sa_0^\omega)(|s|).
+\]
+Here $sa_0^\omega$ is the infinite stream beginning with $s$ and
+continuing with $a_0$ forever. Strict causality makes this output
+independent of the chosen tail. After reading
+$\alpha\upharpoonright n$, the state is exactly that prefix, and
+its output is $T(\alpha)(n)$.
+
+A computable Moore presentation computes $T_x(\alpha)(n)$ by
+reading the first $n$ inputs, applying the corresponding transitions,
+and evaluating the output. For the converse, give $A^*$ a computable
+bijection with $\omega$ and use the preceding prefix construction.
+Such a bijection is obtained by length-lexicographic enumeration for
+finite $A$; for $A=\omega$, enumerate words by increasing
+$|s|+\sum_{i<|s|}s(i)$, with lexicographic order within each finite
+group. Concatenation is computable in either coding. If $T$ is
+Type-2 computable, the value $T(sa_0^\omega)(|s|)$ is computable
+uniformly in $s$, since its oracle stream is uniformly computable
+from $s$. Thus the output and joint transition maps are computable.
+\end{proof}
+
+The interpretation preserves exactly the behavioral equality of
+\S\ref{sec:moore-codes}. For two pointed systems with languages
+$L_x$ and $L_y$,
+\begin{equation}\label{eq:moore-operator-equality}
+ T_x=T_y\quad\Longleftrightarrow\quad L_x=L_y.
+\end{equation}
+Equality of languages gives equality of every output in
+\eqref{eq:moore-stream}. Conversely, extend any word $w$ to
+$wa_0^\omega$ and inspect output $|w|$ to recover its membership
+in the language. Hence the equivalence relation $E_A$ also classifies
+these pointed systems by equality of their induced stream operators.
+
+The code-to-behavior map $\beta:\mathcal C_A\to2^{A^*}$ has a
+uniform effective interpretation as well. For the effective alphabets
+above, name a code by its initial state and oracle access to the
+tables $o(s)$ and $\delta_a(s)$; the pairing function
+\eqref{eq:cantor-pair} combines the table indices into numerical
+coordinates. Given a word $w$, an oracle algorithm follows its
+finitely many transitions and queries the final output. It therefore
+computes $\beta(c)(w)$ uniformly from the name of $c$, even when
+the tables themselves are noncomputable. With these representations,
+$\beta$ is a Type-2 computable map between spaces of codes.
+
+The timing convention distinguishes Moore operators from the full
+class of continuous stream operators. For example, the left shift
+$S:2^\omega\to2^\omega$, defined by $S(\alpha)(n)=\alpha(n+1)$,
+is computable and continuous but fails \eqref{eq:strict-causality}.
+An operator is \emph{causal} if its output at time $n$ depends only
+on the input prefix of length $n+1$. Deleting the zeroth output of
+a Moore operator gives a causal operator. Mealy coalgebras for
+$X\mapsto(B\times X)^A$ produce an output with each input;
+their final coalgebra consists of all causal functions
+$A^\omega\to B^\omega$ \cite[Section 2.2, Theorem 2.3]{Mealy}.
+
+General continuous stream operators can read a variable finite
+number of inputs before emitting each output. Garner studies such
+stream processors and gives an extensional coalgebraic
+characterization of the continuous functions
+$A^\omega\to B^\omega$ \cite[Theorem 1.1]{Garner}. For
+$A=B=\omega$, these are operators on Baire space. The total
+Type-2 computable operators and total continuous operators are,
+respectively, the total arrows of Montagna--Sorbi's $\mathcal B$
+and $\mathcal B_o$. Extending these presentations to their partial
+arrows requires accounting for the $\Pi^0_2$ and $G_\delta$
+domains described in \S2.3. This is part of the first classification
+problem below.
+
+\section{Specific classification problems}
+
+The catalogue suggests three concrete comparisons.
+\begin{enumerate}[leftmargin=*,itemsep=6pt]
+\item For $\mathcal B\subseteq\mathcal B_o$, construct compatible
+coalgebraic representations that preserve the distinction between
+effective and continuous reductions. Determine which representations
+recover the $\Pi^0_2$ and $G_\delta$ domain structures and the
+completeness change identified by Montagna--Sorbi.
+\item For $S_T$, compare the countable generalized-element and germ
+representations as $T$ varies. Determine which coalgebraic invariants
+detect provable equality, ranges, and the connected-domain distinction
+of Di Paola--Montagna's Theorem 4.3.
+\item For analytical and admissible entries, identify the uniformization
+and coding needed for effective coalgebraic representations. Compare
+the resulting 1-cells with numerical oracle inclusions and with
+pointclass-preserving transformations.
+\end{enumerate}
+
+For the shift coalgebras of Proposition~\ref{prop:shift}, the first
+isomorphism classification is explicit: integer translation of the
+observation set. The next problem is to classify representations
+assembled from these systems, retaining multiplicities, admissible
+domains, and the represented arrow family. Theorem~\ref{thm:constant}
+provides the constant-target comparison with which to begin.
+
+\begin{thebibliography}{99}
+\small
+\setlength{\itemsep}{3pt}
+\bibitem{CL3} J.~R.~B. Cockett and S.~Lack,
+\emph{Restriction categories III: colimits, partial limits and extensivity},
+Mathematical Structures in Computer Science \textbf{17} (2007), 775--817.
+\url{https://arxiv.org/abs/math/0610500}.
+\bibitem{DPH} R.~A. Di Paola and A.~Heller,
+\emph{Dominical categories: recursion theory without elements},
+Journal of Symbolic Logic \textbf{52} (1987), 594--635.
+\href{https://doi.org/10.1017/S0022481200029649}{doi:10.1017/S0022481200029649}.
+\bibitem{Montagna} F.~Montagna,
+\emph{``Pathologies'' in two syntactic categories of partial maps},
+Notre Dame Journal of Formal Logic \textbf{30} (1989), 105--116.
+\href{https://doi.org/10.1305/ndjfl/1093634998}{doi:10.1305/ndjfl/1093634998}.
+\bibitem{MS} F.~Montagna and A.~Sorbi,
+\emph{Creativeness and completeness in recursion categories of partial recursive operators},
+Journal of Symbolic Logic \textbf{54} (1989), 1023--1041.
+\href{https://doi.org/10.2307/2274763}{doi:10.2307/2274763}.
+\bibitem{DPM} R.~A. Di Paola and F.~Montagna,
+\emph{Some properties of the syntactic $p$-recursion categories generated
+by consistent, recursively enumerable extensions of Peano arithmetic},
+Journal of Symbolic Logic \textbf{56} (1991), 643--660.
+\href{https://doi.org/10.2307/2274707}{doi:10.2307/2274707}.
+\bibitem{Heller} A.~Heller, \emph{An existence theorem for recursion categories},
+Journal of Symbolic Logic \textbf{55} (1990), 1252--1268.
+\href{https://doi.org/10.2307/2274486}{doi:10.2307/2274486}.
+\bibitem{Coalgebras} F.~Lengyel, \emph{Recursion categories of coalgebras},
+2001. \url{https://arxiv.org/abs/math/0105256}.
+\bibitem{Lengyel} F.~Lengyel, \emph{More existence theorems for recursion categories},
+Annals of Pure and Applied Logic \textbf{125} (2004), 1--41.
+\href{https://doi.org/10.1016/S0168-0072(03)00060-5}{doi:10.1016/S0168-0072(03)00060-5}.
+\bibitem{Corrections} F.~Lengyel,
+\emph{Corrections to More existence theorems for recursion categories},
+version 10, 2026. \url{https://github.com/flengyel/errata/tree/main/lengyel2004}.
+\bibitem{Pointwise} F.~Lengyel,
+\emph{Pointwise provable equality and the failure of composition},
+2026. \url{https://arxiv.org/abs/2609.25556}.
+\bibitem{Representation}
+\emph{Coalgebraic representations of prodominical recursion categories},
+manuscript, version 2, 19 October 2026.
+\url{https://github.com/flengyel/Categorical_Incompleteness/blob/main/Coalgebraic_Representation_v2.tex}.
+\bibitem{Comparisons} \emph{A 2-category of coalgebraic representations},
+manuscript, 20 October 2026.
+\url{https://github.com/flengyel/Categorical_Incompleteness/blob/main/Coalgebra_Representation_Comparisons_v1.tex}.
+\bibitem{Jacobs} B.~Jacobs, \emph{Introduction to coalgebra: towards mathematics of states and observation},
+online manuscript, Chapter 2.
+\url{https://www.cs.ru.nl/B.Jacobs/CLG/JacobsCoalgebraIntro.pdf}.
+\bibitem{RuttenAutomata} J.~J.~M.~M. Rutten,
+\emph{Automata and coinduction (an exercise in coalgebra)},
+CONCUR 1998, Lecture Notes in Computer Science \textbf{1466}, 194--218.
+\url{https://ir.cwi.nl/pub/2114/2114D.pdf}.
+\bibitem{Mealy} H.~H. Hansen, D.~de Oliveira Costa, and J.~J.~M.~M. Rutten,
+\emph{Synthesis of Mealy machines using derivatives},
+CWI report SEN-R0605, May 2006.
+\url{https://ir.cwi.nl/pub/10858/10858D.pdf}.
+\bibitem{Garner} R.~Garner, \emph{Stream processors and comodels},
+Logical Methods in Computer Science \textbf{19}(1) (2023), article 2, 1--24.
+\href{https://doi.org/10.46298/LMCS-19(1:2)2023}{doi:10.46298/LMCS-19(1:2)2023}.
+\url{https://arxiv.org/abs/2106.05473}.
+\bibitem{Scott} D.~Scott, \emph{Data types as lattices},
+SIAM Journal on Computing \textbf{5} (1976), 522--587.
+\url{https://www.cs.ox.ac.uk/files/3287/PRG05.pdf}.
+\bibitem{Pauly} A.~Pauly,
+\emph{On the topological aspects of the theory of represented spaces},
+\url{https://arxiv.org/abs/1204.3763}.
+\bibitem{Terraf} P.~S\'anchez Terraf, \emph{Bisimilarity is not Borel},
+Mathematical Structures in Computer Science \textbf{27} (2017), 1265--1284.
+\url{https://arxiv.org/abs/1211.0967}.
+\end{thebibliography}
+\end{document}
