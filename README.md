@@ -5,5 +5,6 @@ Mathematical notes, organized by topic. This repository is a companion to
 
 - [Recursion categories](recursion_categories/): a catalogue of examples,
   coalgebraic representations, and classification problems over sets of integers.
+- [Logic](logic/): *The Unbearable Notation of Logic*.
 
 The notes are licensed under [Creative Commons Attribution 4.0 International](LICENSE).
