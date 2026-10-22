@@ -1,0 +1,445 @@
+\documentclass[11pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,amsmath,amssymb,amsthm,mathtools}
+\usepackage[margin=1in]{geometry}
+\usepackage{microtype,tikz-cd}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\hypersetup{pdftitle={A recursion category for Blum--Shub--Smale computation},pdfauthor={Florian Lengyel}}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newcommand{\R}{\mathbb R}
+\newcommand{\N}{\omega}
+\newcommand{\C}{\mathcal C_{\mathrm{BSS}}}
+\newcommand{\D}{\mathcal D_{\mathrm{BSS}}}
+\newcommand{\pfn}{\rightharpoonup}
+\newcommand{\dom}{\operatorname{dom}}
+\newcommand{\enc}{\operatorname{enc}}
+\newcommand{\Split}{\operatorname{Split}_{\mathrm r}}
+\title{A recursion category for Blum--Shub--Smale computation}
+\author{Florian Lengyel\thanks{Email:
+\href{mailto:flengyel@gradcenter.cuny.edu}{\texttt{flengyel@gradcenter.cuny.edu}}}}
+\date{October 22, 2026}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+We construct a dominical recursion category whose arrows are
+Blum--Shub--Smale (BSS) computable partial functions over the real numbers.
+The objects are positive finite powers of a space of tagged finite real
+tuples. An explicit computable bijection identifies this space with its
+square, and program specialization makes a universal evaluator a Turing
+morphism. The category of BSS-computable partial functions between
+finite-dimensional real spaces embeds fully faithfully in the restriction
+idempotent completion.
+\end{abstract}
+
+The existence of a recursion-category presentation of BSS computation
+was stated in \cite[\S3, p.~25]{Lengyel01}, with the construction omitted.
+We give the construction over $\R$. The computation model and its
+universal machines are due to Blum, Shub, and Smale
+\cite{BSS89,BCSS98}; the categorical definitions are those of Di~Paola
+and Heller \cite{DPH87} and Heller \cite{Heller90}.
+Vigna \cite{Vigna96} gives another categorical characterization of
+BSS computability over commutative ordered rings.
+Our construction specifies an isotype and a Turing morphism and
+identifies the fixed-dimensional computations in its completion.
+
+\section{Finite data and a computable pairing}
+\label{sec:data}
+
+We use deterministic BSS machines over the ordered field $\R$, with
+exact arithmetic, equality and order tests, and finite programs.
+Each program may contain finitely many arbitrary real constants.
+Running time is unrestricted. Inputs and outputs are finite tuples
+whose lengths are recorded; machines have unbounded tape storage.
+These are the finite-sequence conventions used for universal
+computation in \cite[\S8]{BSS89} and \cite[Chapter~3]{BCSS98}.
+Division by zero is treated as divergence. A \emph{partial function}
+$f:A\pfn B$ is a function from a subset $\dom(f)\subseteq A$ to $B$;
+the subset $\dom(f)$ is its \emph{domain of definition}.
+The partial function is \emph{total} when $\dom(f)=A$.
+It is BSS-computable when a machine halts exactly on this subset
+and returns $f(a)$ on each input $a\in\dom(f)$.
+
+Put $\N=\{0,1,\ldots\}$ and
+$\R^{<\omega}=\coprod_{n\in\N}\R^n$, including the empty tuple.
+For a tuple $a$, write $|a|$ for its length and $a^\frown b$ for
+concatenation. Define
+\[
+ X=\N\times\R^{<\omega}.
+\]
+An element $(k,a)$, with $a=(a_0,\ldots,a_{n-1})$, is represented by
+the finite record
+\[
+ \enc(k,a)=(n,k,a_0,\ldots,a_{n-1}).
+\]
+The two initial entries are natural numbers stored as real numbers.
+An entry can be tested for membership in $\N$ by rejecting negative
+values and repeatedly subtracting $1$ until it lies in $[0,1)$;
+the original entry is a natural number exactly when the remainder is $0$.
+For each fixed $r\geq1$, an element of $X^r$ is represented by the
+concatenation of its $r$ records. The length fields determine their
+boundaries. Computability of partial maps between these sets always
+refers to these representations.
+
+The natural-number tag will record how a tuple was split.
+Define the Cantor pairing $c:\N^2\to\N$ by
+$c(k,l)=(k+l)(k+l+1)/2+l$. Its inverse is computable by a finite
+search through successive diagonals of $\N^2$. Such searches, and
+integer quotient and remainder by a positive integer, are implementable
+by BSS loops using addition, subtraction, and comparisons.
+
+\begin{lemma}\label{lem:pair}
+The map $b:X\times X\to X$ defined, for $|a|=n$ and $|a'|=m$, by
+\[
+ b\bigl((k,a),(l,a')\bigr)
+   =\bigl((n+m+1)c(k,l)+n,\ a^\frown a'\bigr)
+\]
+is a bijection, and both $b$ and $b^{-1}$ are total BSS-computable.
+\end{lemma}
+
+\begin{proof}
+Given $(q,z)\in X$, put $d=|z|$ and compute the unique quotient and
+remainder $q=(d+1)t+n$, where $0\leq n\leq d$.
+Recover $(k,l)=c^{-1}(t)$, split $z$ after its first $n$ entries,
+and write the resulting tuples as $a,a'$. Then
+$b^{-1}(q,z)=((k,a),(l,a'))$.
+These operations are inverse to the displayed formula, including
+when either tuple is empty. Every loop terminates on the indicated
+natural-number data, and the remaining operations copy finite lists.
+\end{proof}
+
+Iterating $b$ gives chosen total computable bijections
+$b_r:X^r\to X$ for all $r\geq1$, with $b_1=1_X$.
+The tag is independent of the tuple length; this independence allows
+every output tag to occur in Lemma~\ref{lem:pair}.
+
+\section{The category of partial computations}
+\label{sec:category}
+
+Define $\C$ to have objects $X^r$, $r\geq1$, and all BSS-computable
+partial functions $f:X^r\pfn X^s$ as arrows. Equality of arrows means
+equality of domains and of values on those domains. Composition
+$g\circ f$ applies $f$ first and is defined exactly where $f$ is
+defined and $g$ is defined at its value.
+
+A \emph{partial identity} on a subset $S\subseteq A$ is the partial
+function $A\pfn A$ with domain $S$ and value $a$ at each $a\in S$.
+The \emph{restriction} $\bar f:A\pfn A$ of $f:A\pfn B$ is the
+partial identity on $\dom(f)$. Thus $f$ is total exactly when
+$\bar f=1_A$, where $1_A$ is the identity
+function on $A$. Write $0_{A,B}:A\pfn B$ for the nowhere-defined
+partial function, whose domain is empty; subscripts are omitted
+when the source and target are determined by context.
+For $f:A\pfn B$ and $g:C\pfn D$, their \emph{near-product} is
+the partial function
+$f\boxtimes g:A\times C\pfn B\times D$ with value
+$(f(a),g(c))$ and domain $\dom(f)\times\dom(g)$.
+On the underlying sets, cartesian products are identified by
+concatenating the tuples of $X$-coordinates; thus the near-product
+of objects is $X^r\boxtimes X^s=X^{r+s}$.
+The projections $(a,b)\mapsto a$ and $(a,b)\mapsto b$ and the
+diagonal $a\mapsto(a,a)$ are total.
+
+A \emph{$P$-category} is a category $\mathcal K$ with a functor
+$\boxtimes:\mathcal K\times\mathcal K\to\mathcal K$, called the
+near-product, a natural family $\Delta_A:A\to A\boxtimes A$,
+and projections $\pi_0:A\boxtimes B\to A$ and
+$\pi_1:A\boxtimes B\to B$, subject to the following axioms
+\cite[\S5]{Heller90}. For maps $f:T\to A$ and $g:T\to B$, write
+$\langle f,g\rangle=(f\boxtimes g)\circ\Delta_T$.
+Object subscripts on projections are suppressed when their types
+are determined by the formula.
+
+First, $\pi_i\circ\Delta_A=1_A$ for $i=0,1$, and
+$\langle\pi_0,\pi_1\rangle=1_{A\boxtimes B}$.
+Second, let $\mathcal P$ be the smallest subcategory containing all
+objects, identities, and projections and closed under $\boxtimes$.
+For every $f:A\to B$ in $\mathcal K$ and $p:C\to D$ in
+$\mathcal P$, the projections satisfy
+\[
+ \pi_0\circ(f\boxtimes p)=f\circ\pi_0,
+ \qquad
+ \pi_1\circ(p\boxtimes f)=f\circ\pi_1.
+\]
+Third, the following families are required to be natural:
+\[
+\begin{aligned}
+ \alpha_{A,B,C}
+  &=\langle\pi_0\circ\pi_0,
+          \langle\pi_1\circ\pi_0,\pi_1\rangle\rangle
+    :(A\boxtimes B)\boxtimes C\longrightarrow A\boxtimes(B\boxtimes C),\\
+ \sigma_{A,B}
+  &=\langle\pi_1,\pi_0\rangle
+    :A\boxtimes B\longrightarrow B\boxtimes A.
+\end{aligned}
+\]
+For an arrow $f:A\to B$ in a $P$-category, define
+its restriction by $\bar f=\pi_0\circ\langle1_A,f\rangle$;
+the arrow is total when $\bar f=1_A$.
+In the category of sets and partial functions this agrees with the
+partial-identity definition above. In this category,
+$\alpha$ reassociates triples and $\sigma$ interchanges the two
+coordinates. The stated axioms hold for the near-product, diagonal,
+and projections defined above. In particular, every map in
+$\mathcal P$ is total, which gives the two projection equations.
+A subcategory closed under this structure inherits the axioms.
+
+A family of \emph{zero arrows} consists of one arrow $0_{A,B}$ for
+each pair of objects, absorbing composition and near-products:
+every composite or near-product with a zero arrow is the zero arrow
+of its type. The nowhere-defined partial functions have this property.
+A $P$-category with such zero arrows is \emph{prodominical}.
+A map $f$ is \emph{weakly total} when
+$f\circ h=0$ implies $h=0$ for every composable $h$.
+By \cite[Proposition~5.1, p.~1261]{Heller90}, a prodominical category
+is \emph{dominical} if every weakly total map is total and
+$f\boxtimes g=0$ implies $f=0$ or $g=0$.
+An \emph{isotype} is a category in which all objects are isomorphic.
+
+\begin{proposition}\label{prop:dominical}
+The category $\C$ is a dominical $P$-category and an isotype.
+\end{proposition}
+
+\begin{proof}
+Identities and composition are computable: for a composite, run the
+first machine and then the second. To compute $\bar f$, save the
+input, run a machine for $f$, and return the saved input if it halts.
+To compute $f\boxtimes g$, run the two machines successively on
+their respective inputs and return both outputs. This halts exactly
+on $\dom(f)\times\dom(g)$. Projections, diagonals, and the finite
+coordinate rearrangements are computable by copying records.
+Thus the $P$-category structure is inherited from partial functions.
+
+The nowhere-defined map $0_{A,B}:A\pfn B$ is computed by a
+nonterminating loop. It absorbs composition and near-products,
+so $\C$ is prodominical.
+
+Suppose that $f:A\pfn B$ is not total, and choose
+$a\in A\setminus\dom(f)$. The constant map $h:X\to A$ with value
+$a$ is total and BSS-computable: its program uses the finitely many
+real entries of $a$ as constants. Since $X$ is nonempty,
+$h\ne0$, while $f\circ h=0$. Hence $f$ is not weakly total.
+Also, if $f\ne0$ and $g\ne0$, choose one point in each domain;
+their pair belongs to $\dom(f\boxtimes g)$. Heller's two
+conditions for dominicality follow.
+
+Finally, the maps $b_r$ and their inverses are arrows of $\C$.
+They identify every object with $X$.
+\end{proof}
+
+\section{Universal evaluation and specialization}
+\label{sec:universal}
+
+In a prodominical isotype, a \emph{Turing morphism} is an arrow
+$\tau:W\boxtimes A\pfn B$ such that for every object $V$ and
+every arrow $\varphi:V\boxtimes A\pfn B$ there is a total arrow
+$s:V\to W$ satisfying
+$\varphi=\tau\circ(s\boxtimes1_A)$.
+A \emph{recursion category} is a prodominical isotype with a Turing
+morphism \cite[\S9, pp.~1264--1265]{Heller90}.
+The equality in this definition is equality of partial maps.
+
+We describe the program representation used for the evaluator.
+A BSS program can be written as a finite instruction list over a fixed
+set of instruction types: arithmetic, copying, tape movement,
+conditional branching, and halting. Polynomial and rational
+instructions are expanded into finite arithmetic instruction lists.
+The instruction types, register addresses, branch destinations, and
+list lengths are natural numbers. The real constants are stored
+separately in a finite table and referred to by their indices.
+For a finite list $(u_0,\ldots,u_{L-1})$ of natural numbers, put
+$h_L=0$, define $h_i=c(u_i,h_{i+1})$ recursively backwards for $0\leq i<L$,
+and define its code to be $c(L,h_0)$. To decode, recover $L$ and
+$h_0$, unpair $L$ times, and require the final remainder to be $0$.
+Apply this encoding to the integer instruction data. Together
+with the real constant table, it gives a program code in $X$.
+
+An interpreter decodes the instruction list, maintains the simulated
+tape and instruction pointer, and executes one instruction at a time.
+Integer addresses are handled by finite scans, and a constant-table
+lookup copies the indicated real entry. Thus one interpreter performs
+the indicated computation without placing the simulated constants in
+its own finite program. Invalid instructions or indices cause it to
+loop. An output is accepted only if it is a valid record for an
+element of $X$. This gives a BSS-computable partial evaluator
+$U:X\boxtimes X\pfn X$. It is the usual universal-machine
+construction of \cite[\S8, pp.~34--36]{BSS89}, with instruction
+data and real constants stored in separate fields.
+
+\begin{lemma}\label{lem:specialization}
+For every $r\geq1$ and every BSS-computable partial function
+$\varphi:X^r\times X\pfn X$, there is a total BSS-computable
+$s_\varphi:X^r\to X$ such that, for every $v\in X^r$ and $x\in X$,
+$U(s_\varphi(v),x)$ and $\varphi(v,x)$ have the same definedness
+and, when defined, the same value.
+\end{lemma}
+
+\begin{proof}
+Fix a program $P$ computing $\varphi$ on the concatenated input
+records. Given $v\in X^r$, construct a program whose input is $x$.
+Its initialization instructions save $x$, write the records of $v$
+into the parameter part of the simulated input, and append the
+saved record of $x$. It then runs $P$ on that input.
+
+To produce this program, copy the finitely many real entries of $v$
+to its constant table, together with the constants of $P$.
+Generate one finite initialization prefix of the required length,
+then append the fixed instruction list for $P$, adjusting addresses
+and branch destinations. All loops in this construction are bounded
+by the lengths of the input records or of the generated instruction
+list. The construction never runs $P$. It therefore defines a total
+BSS-computable code map $s_\varphi$.
+
+The generated program on input $x$ runs $P$ on $(v,x)$ after a
+finite initialization. Consequently it halts exactly when
+$\varphi(v,x)$ is defined and returns the same value.
+\end{proof}
+
+\begin{samepage}
+The following diagram expresses the specialization equation.
+Its top arrow is total, and the two paths have the same restriction
+domain by Lemma~\ref{lem:specialization}.
+\[
+\begin{tikzcd}[column sep=large,row sep=large]
+ X^r\boxtimes X
+   \arrow[r,"s_\varphi\boxtimes1_X"]
+   \arrow[dr,"\varphi"']
+   &X\boxtimes X\arrow[d,"U"]\\
+   &X .
+\end{tikzcd}
+\]
+\end{samepage}
+\begin{theorem}\label{thm:main}
+Let $X=\omega\times\coprod_{n\geq0}\R^n$, with the record
+representations of Section~\ref{sec:data}. The category with objects
+$X^r$, $r\geq1$, and all unrestricted-time BSS-computable partial
+functions between them, allowing finitely many arbitrary real
+constants in each program, is a dominical recursion category.
+\end{theorem}
+
+\begin{proof}
+Proposition~\ref{prop:dominical} makes it a dominical isotype.
+Every object $V$ is $X^r$ for some $r\geq1$, so
+Lemma~\ref{lem:specialization} says exactly that
+$U:X\boxtimes X\pfn X$ is a Turing morphism.
+\end{proof}
+
+\section{Recovery of fixed-dimensional computations}
+\label{sec:typed}
+
+Let $\D$ be the category with objects $\R^n$, $n\geq0$, and all
+BSS-computable partial functions between them. A \emph{restriction
+idempotent} is an arrow $e:A\pfn A$ satisfying $e=\bar e$;
+for partial functions, these are precisely the partial identities.
+For a category of partial maps $\mathcal C$ closed under restrictions,
+its \emph{restriction idempotent completion} $\Split(\mathcal C)$
+has objects $(A,e)$, where $e:A\pfn A$ is a restriction idempotent
+belonging to $\mathcal C$.
+An arrow $h:(A,e)\pfn(B,d)$ is an arrow of $\mathcal C$ satisfying
+$h=d\circ h\circ e$. Its composition is inherited, and the identity
+of $(A,e)$ is $e$. This is the splitting construction for restriction
+idempotents discussed in \cite[\S2.1, p.~187]{CockettHofstra08}.
+Restrictions are inherited from $\mathcal C$. If $\mathcal C$ has
+the near-product of partial functions, define
+$(A,e)\boxtimes(B,d)=(A\boxtimes B,e\boxtimes d)$ and use
+the inherited near-product on arrows.
+
+For $n\geq0$, let $S_n=\{(0,a)\in X:|a|=n\}$, and let
+$e_n:X\pfn X$ be the partial identity on $S_n$.
+The tag and length tests decide membership in $S_n$, so $e_n$
+is BSS-computable. Define the total encoder
+$i_n:\R^n\to X$ by $i_n(a)=(0,a)$ and the partial decoder
+$d_n:X\pfn\R^n$ by $d_n(0,a)=a$ on $S_n$.
+They are BSS-computable and satisfy
+$d_n\circ i_n=1_{\R^n}$ and $i_n\circ d_n=e_n$.
+Their endpoint types here refer to sets and partial functions.
+
+\begin{proposition}\label{prop:embedding}
+There is a fully faithful functor
+$J:\D\to\Split(\C)$ given by
+\[
+ J(\R^n)=(X,e_n),\qquad
+ J(f)=i_m\circ f\circ d_n
+ \quad(f:\R^n\pfn\R^m).
+\]
+\end{proposition}
+
+\begin{proof}
+The map $J(f)$ is BSS-computable, has domain contained in $S_n$,
+and takes its values in $S_m$. Thus
+$J(f)=e_m\circ J(f)\circ e_n$.
+Moreover, $J(1_{\R^n})=e_n$, which is the identity of $(X,e_n)$.
+For composable $f,g$, the identity $d_m\circ i_m=1_{\R^m}$
+gives $J(g)\circ J(f)=J(g\circ f)$, including equality of domains.
+
+Conversely, an arrow $h:(X,e_n)\pfn(X,e_m)$ decodes to the
+BSS-computable partial function $d_m\circ h\circ i_n$.
+Encoding and decoding are inverse on these hom-sets. In particular,
+$i_m\circ(d_m\circ h\circ i_n)\circ d_n
+=e_m\circ h\circ e_n=h$, and the other composite is the identity
+by $d_j\circ i_j=1_{\R^j}$.
+\end{proof}
+
+This identifies $\D$ with the full subcategory on the objects
+$(X,e_n)$. Moreover,
+$\overline{J(f)}=J(\bar f)$, since both sides are the partial
+identity on $i_n(\dom(f))$.
+The representation also respects the near-products up to
+computable isomorphism: on the supported domains, concatenate the
+real tuples to obtain $S_n\times S_m\cong S_{n+m}$, and split after
+the first $n$ entries for the inverse. Thus the fixed-dimensional
+BSS computations are recovered with their partial-map structure.
+
+\begin{thebibliography}{9}
+\small
+\setlength{\itemsep}{3pt}
+
+\bibitem{BSS89}
+Lenore Blum, Mike Shub, and Steve Smale,
+On a theory of computation and complexity over the real numbers:
+$NP$-completeness, recursive functions and universal machines,
+\emph{Bulletin of the American Mathematical Society (N.S.)}
+\textbf{21} (1989), no.~1, 1--46.
+\href{https://doi.org/10.1090/S0273-0979-1989-15750-9}{doi:10.1090/S0273-0979-1989-15750-9}.
+
+\bibitem{BCSS98}
+Lenore Blum, Felipe Cucker, Michael Shub, and Steve Smale,
+\emph{Complexity and Real Computation},
+Springer, New York, 1998.
+\href{https://doi.org/10.1007/978-1-4612-0701-6}{doi:10.1007/978-1-4612-0701-6}.
+
+\bibitem{CockettHofstra08}
+J.~Robin~B. Cockett and Pieter~J.~W. Hofstra,
+Introduction to Turing categories,
+\emph{Annals of Pure and Applied Logic}
+\textbf{156} (2008), nos.~2--3, 183--209.
+\href{https://doi.org/10.1016/j.apal.2008.04.005}{doi:10.1016/j.apal.2008.04.005}.
+
+\bibitem{DPH87}
+Robert~A. Di~Paola and Alex Heller,
+Dominical categories: recursion theory without elements,
+\emph{Journal of Symbolic Logic} \textbf{52} (1987), no.~3, 594--635.
+\href{https://doi.org/10.2307/2274352}{doi:10.2307/2274352}.
+
+\bibitem{Heller90}
+Alex Heller,
+An existence theorem for recursion categories,
+\emph{Journal of Symbolic Logic} \textbf{55} (1990), no.~3, 1252--1268.
+\href{https://doi.org/10.2307/2274486}{doi:10.2307/2274486}.
+
+\bibitem{Lengyel01}
+Florian Lengyel,
+\emph{Recursion categories of coalgebras},
+preprint, 2001.
+\href{https://arxiv.org/abs/math/0105256}{arXiv:math/0105256}.
+
+\bibitem{Vigna96}
+Sebastiano Vigna,
+On the relations between distributive computability and the BSS model,
+\emph{Theoretical Computer Science} \textbf{162} (1996), no.~1, 5--21.
+\href{https://doi.org/10.1016/0304-3975(95)00247-2}{doi:10.1016/0304-3975(95)00247-2}.
+
+\end{thebibliography}
+\end{document}

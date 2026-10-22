@@ -41,6 +41,22 @@ obstruction at the partial numerical function type. The note studies dependent
 choice, Boolean separation, determinacy, continuous representative lifts, and
 their realization by stream transducers.
 
+## Blum–Shub–Smale computation
+
+*A recursion category for Blum–Shub–Smale computation*
+
+Version 2, 22 October 2026.
+
+- [Read the note (PDF)](BSS_Recursion_Category_v2.pdf).
+- [LaTeX source](BSS_Recursion_Category_v2.tex).
+
+The note constructs a dominical recursion category for Blum–Shub–Smale
+computation over the real numbers, allowing finitely many arbitrary real
+constants per program. It gives an explicit computable pairing and proves
+total program specialization. The category of BSS-computable partial functions
+between finite-dimensional real spaces embeds fully faithfully in the
+restriction idempotent completion.
+
 ## Building the notes
 
 To build the PDF with a TeX installation containing the packages listed in the
@@ -51,6 +67,6 @@ pdflatex -interaction=nonstopmode -halt-on-error Recursion_Categories_and_Coalge
 pdflatex -interaction=nonstopmode -halt-on-error Recursion_Categories_and_Coalgebraic_Representations_v3.tex
 ```
 
-Use the corresponding source filename to build either companion note.
+Use the corresponding source filename to build any of the notes above.
 Each bibliography is included in its source; no separate bibliography tool is
 needed. The repository's [CC BY 4.0 license](../LICENSE) applies to these notes.
