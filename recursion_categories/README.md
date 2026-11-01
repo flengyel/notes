@@ -4,10 +4,10 @@
 
 *Ranges and inseparability in recursion categories*
 
-Version 1, 1 November 2026.
+Version 2, 1 November 2026.
 
-- [Read the note (PDF)](Ranges_and_Inseparability_v1.pdf).
-- [LaTeX source](Ranges_and_Inseparability_v1.tex).
+- [Read the note (PDF)](Ranges_and_Inseparability_v2.pdf).
+- [LaTeX source](Ranges_and_Inseparability_v2.tex).
 
 The note proves noncomplementation of a Turing domain and a criterion for
 inseparable domains under a range functor. Splitness, weak choice and the
@@ -20,8 +20,10 @@ This revises *Locally connected recursion categories*, dated 10 October 2026.
 The dated originals are preserved as [LOCOct10f.pdf](LOCOct10f.pdf) and
 [LOCOct10f.tex](LOCOct10f.tex). The revised note retains all 18 numbered
 statements and replaces the connected-domain argument in the criterion.
-[Changes and local reviews](reviews/ranges_and_inseparability_v1/README.md)
-record the scope of the revision.
+[Version 1](Ranges_and_Inseparability_v1.pdf) and its
+[reviews](reviews/ranges_and_inseparability_v1/README.md) remain available.
+The [version 2 reviews](reviews/ranges_and_inseparability_v2/README.md)
+record the explicit typing, parameterization proof and numbering corrections.
 
 
 ## Catalogue and coalgebraic representations

@@ -1,0 +1,227 @@
+--- note_v1.tex
++++ note_v2.tex
+@@ -10,28 +10,28 @@
+ \usepackage{lmodern,microtype}
+ \usepackage{needspace}
+ \usepackage[hidelinks]{hyperref}
+-\hypersetup{pdftitle={Ranges and inseparability in recursion categories -- Version 1},
++\hypersetup{pdftitle={Ranges and inseparability in recursion categories -- Version 2},
+ pdfauthor={Florian Lengyel}}
+ 
+ \theoremstyle{plain}
+ \newtheorem{thm}{Theorem}[section]
+-\newtheorem{cor}{Corollary}[thm]
+-\newtheorem{lem}{Lemma}[thm]
+-\newtheorem{claim}{Claim}[thm]
+-\newtheorem{axiom}{Axiom}[thm]
+-\newtheorem{conj}{Conjecture}[thm]
+-\newtheorem{fact}{Fact}[thm]
+-\newtheorem{hypo}{Hypothesis}[thm]
+-\newtheorem{assum}{Assumption}[thm]
+-\newtheorem{prop}{Proposition}[thm]
+-\newtheorem{crit}{Criterion}[thm]
++\newtheorem{cor}[thm]{Corollary}
++\newtheorem{lem}[thm]{Lemma}
++\newtheorem{claim}[thm]{Claim}
++\newtheorem{axiom}[thm]{Axiom}
++\newtheorem{conj}[thm]{Conjecture}
++\newtheorem{fact}[thm]{Fact}
++\newtheorem{hypo}[thm]{Hypothesis}
++\newtheorem{assum}[thm]{Assumption}
++\newtheorem{prop}[thm]{Proposition}
++\newtheorem{crit}[thm]{Criterion}
+ \theoremstyle{definition}
+-\newtheorem{defn}{Definition}[thm]
+-\newtheorem{exmp}{Example}[thm]
+-\newtheorem{rem}{Remark}[thm]
+-\newtheorem{prob}{Problem}[thm]
+-\newtheorem{prin}{Principle}[thm]
+-\newtheorem{alg}{Algorithm}[thm]
++\newtheorem{defn}[thm]{Definition}
++\newtheorem{exmp}[thm]{Example}
++\newtheorem{rem}[thm]{Remark}
++\newtheorem{prob}[thm]{Problem}
++\newtheorem{prin}[thm]{Principle}
++\newtheorem{alg}[thm]{Algorithm}
+ \newcommand{\map}[2]{{#1}\rightarrow{#2}}
+ \newcommand{\MAP}[3]{{#1}:{#2}\rightarrow{#3}}
+ \newcommand{\sento}[2]{{#1}\mapsto{#2}}
+@@ -45,7 +45,7 @@
+ \begin{document}
+ \title{Ranges and inseparability in recursion categories}
+ \author{Florian Lengyel}
+-\date{Version 1\\1 November 2026}
++\date{Version 2\\1 November 2026}
+ \thanks{Email address: flengyel@gc.cuny.edu}
+ \address{The Graduate School and University Center, %
+ Ph.D Program in Computer Science, %
+@@ -332,24 +332,30 @@
+ both diagonal arguments.
+ 
+ \begin{prop}\label{IdempotentTheorem}
+-Every $P$-recursion category $\mathbf{C}$ has an idempotent weak
+-Turing morphism $t$, together with a mapping $N$ such that for
+-every $t$-index $e$ of $\varphi$ in $\mathbf{C}$, $N(e)$ is an
+-idempotent $t$-index of $\varphi$.
++Every $P$-recursion category $\mathbf C$ has an object $Y$, an
++idempotent weak Turing morphism $t:Y\times Y\to Y$, and a function
++$N:\mathbf C_T(Y,Y)\to\mathbf C_T(Y,Y)$ such that, for every
++morphism $\varphi:Y\to Y$ and every total $t$-index $e:Y\to Y$ of
++$\varphi$, the morphism $N(e)$ is an idempotent $t$-index of $\varphi$.
+ \end{prop}
+ \begin{proof}
+ Choose a Turing morphism $\tau:X\times X\to X$, put $Y=X\times X$,
+ and choose an isomorphism $a:Y\to X$. Let $q_0,q_1:Y\to X$ be
+ the projections. The morphism
+-$t=a^{-1}\tau(q_1\times a):Y\times Y\to Y$ is Turing: given
+-$f:V\times Y\to Y$, apply the
+-parameterization property of $\tau$ to
+-$af(1_V\times a^{-1}):V\times X\to X$, and duplicate the resulting
+-parameter map to obtain a map $V\to Y$.
+-
+-For a total $t$-index $e:Y\to Y$, put
++$t=a^{-1}\tau(q_1\times a):Y\times Y\to Y$ is Turing. Given an
++object $V$ and a morphism $f:V\times Y\to Y$, choose a total
++morphism $c:V\to X$ such that
++\[
++ \tau(c\times1_X)=af(1_V\times a^{-1}).
++\]
++Then $g=\Delta_Xc:V\to Y$ is total, $q_1g=c$, and
++\[
++ t(g\times1_Y)=a^{-1}\tau(c\times a)=f.
++\]
++
++For a total endomorphism $e:Y\to Y$, put
+ $k=q_1e\Delta_X:X\to X$ and $N(e)=\langle q_0,kq_0\rangle:Y\to Y$.
+-Then $q_0N(e)=q_0$, so $N(e)^2=N(e)$. If $e$ indexes
++Both morphisms are total. We have $q_0N(e)=q_0$, so $N(e)^2=N(e)$. If $e$ indexes
+ $f:Y\to Y$, precomposing its index equation with
+ $(\Delta_Xq_0)\times1_Y$ gives
+ $a^{-1}\tau(kq_0\times a)=fp_{1,Y,Y}$.
+@@ -368,13 +374,13 @@
+ 
+ For a morphism $\phi:X\to Y$ and $\varepsilon\in\mathrm{Dom}(Y)$, we write
+ $\phi\prec\varepsilon$ if and only if $\varepsilon\phi=\phi$; we
+-say that $\varepsilon$ {\it receives} $\phi$. If $\varepsilon$
+-receives $\phi$, and in addition, $\varepsilon$ satisfies for all
+-appropriate $\psi,\psi'$, $\psi\phi=\psi'\phi$ implies
+-$\psi\varepsilon=\psi'\varepsilon,$ then $\varepsilon$ is the
+-least domain in $\mathrm{Dom}(Y)$ receiving $\phi$. In this case
+-we say that $\phi$ has range $\varepsilon$ and we write
+-$\mathrm{ran}\phi=\varepsilon$.
++say that $\varepsilon$ {\it receives} $\phi$. Suppose that
++$\varepsilon$ receives $\phi$ and that, for every object $Z$ and all
++morphisms $\psi,\psi':Y\to Z$, the equality
++$\psi\phi=\psi'\phi$ implies
++$\psi\varepsilon=\psi'\varepsilon$. Then $\varepsilon$ is the least
++domain in $\mathrm{Dom}(Y)$ receiving $\phi$. We call $\varepsilon$
++the range of $\phi$ and write $\mathrm{ran}\phi=\varepsilon$.
+ 
+ The relation $\prec$ agrees with $\le$ on domains. It has the following transitivity property.
+ 
+@@ -430,8 +436,6 @@
+ $\gamma\vee\gamma^\perp=1_X$ and $\gamma\gamma^\perp=0_X$.
+ Distributivity makes this complement unique.
+ 
+-The next fact follows from the preceding.
+-
+ \begin{prop}\label{PropExpected}
+ For any morphisms $\MAP{\varphi}{X}{Y},\MAP{\psi}{Y}{Z}$,
+ $\psi\varphi = 0$ if and only if
+@@ -445,8 +449,9 @@
+ Take ranges and apply the preceding proposition.
+ \end{proof}
+ 
+-For a morphism $f:X\to Y$, define its \textit{inverse image} and
+-\textit{image} on domains by
++For a morphism $f:X\to Y$, define its \textit{inverse image}
++$f^*:\mathrm{Dom}(Y)\to\mathrm{Dom}(X)$ and \textit{image}
++$f_*:\mathrm{Dom}(X)\to\mathrm{Dom}(Y)$ by
+ $f^*\beta=\rst{\beta f}$ and $f_*\alpha=\mathrm{ran}(f\alpha)$.
+ Inverse image preserves meets, and image preserves joins. In a
+ $P$-category with coproducts and ranges, inverse image also preserves
+@@ -455,7 +460,7 @@
+ this last property explicitly.
+ The following fact will be used below ~\cite[Cor. 5.6 (iii)]{MR88i:03078}.
+ \begin{prop}\label{PropImageFact}
+-Let $\MAP{\phi}{X}{Y}$ be a morphism, and let $\alpha\in\mathrm{Dom}(X)$ and  $\beta\in\mathrm{Dom}(Y)$, then
++Let $\MAP{\phi}{X}{Y}$ be a morphism, and let $\alpha\in\mathrm{Dom}(X)$ and $\beta\in\mathrm{Dom}(Y)$. Then
+ $\phi_*(\alpha)\beta =\phi_*(\alpha\phi^*\beta)$.
+ \end{prop}
+ \begin{proof}
+@@ -464,13 +469,10 @@
+ Take ranges and apply Proposition~\ref{PropDomRan}.
+ \end{proof}
+ 
+-For ${\phi}$ total we have 
+-that $\phi_*$ is left adjoint to $\phi^*$ ~\cite{MR92e:03067}.
+-
+ \begin{prop}
+ If $\MAP{\phi}{X}{Y}$ is total in a restriction category with ranges, then for each
+ $\alpha\in\mathrm{Dom}(X)$ and for each $\beta\in\mathrm{Dom}(Y)$,
+-$\phi_*\alpha\le\beta$ if and only if $\alpha\le\phi^*\beta$.
++$\phi_*\alpha\le\beta$ if and only if $\alpha\le\phi^*\beta$ \cite{MR92e:03067}.
+ \end{prop}
+ 
+ Adjointness follows from the next proposition.
+@@ -548,7 +550,8 @@
+ if no such $\gamma$ exists.
+ 
+ \subsection{Connected domains}
+-Connected domains are a surrogate in $P$-categories for points; they  first appeared in ~\cite{MR92e:03067} and subsequently in ~\cite{MR93b:03103,leng}.
++Connected domains were introduced in \cite{MR92e:03067} and used
++in \cite{MR93b:03103,leng}.
+ A domain $\alpha$ is \textit{connected} if every decomposition
+ $\alpha=\beta\vee\gamma$ with $\beta\gamma=0$ has $\beta=0$ or
+ $\gamma=0$. The zero domain is connected. A restriction category with
+@@ -631,8 +634,10 @@
+ $\phi\sigma=\rst\sigma$ and $\phi\sigma\phi=\phi$. It follows that
+ $\rst{\sigma}=\mathrm{ran}(\phi)$. A
+ restriction category satisfies the {\it axiom of choice} if every morphism
+-has a section. A morphism  $\MAP{\phi}{X}{Y}$ is a {\it partial monomorphism}
+-if for all morphisms $\theta,\theta'$, $\phi\theta=\phi\theta'$ implies $\rst{\phi}\theta=\rst{\phi}\theta'$.
++has a section. A morphism $\phi:X\to Y$ is a \textit{partial monomorphism}
++if, for every object $W$ and all morphisms $\theta,\theta':W\to X$,
++the equality $\phi\theta=\phi\theta'$ implies
++$\rst\phi\,\theta=\rst\phi\,\theta'$.
+ A restriction category satisfies the \textit{weak axiom of choice},
+ or \textit{weak choice}, if every partial monomorphism has a section.
+ 
+@@ -666,7 +671,7 @@
+ zeros and binary restriction coproducts, in which inverse images of
+ domains along every morphism preserve binary joins. Let $X$ be an
+ object of $\mathbf C$, and suppose that $\alpha,\beta\in\mathrm{Dom}(X)$ satisfy $\alpha\beta=0_X$.
+-For total morphisms $\theta,\theta':Y\to X+X$, equality
++For every object $Y$ and all total morphisms $\theta,\theta':Y\to X+X$, equality
+ $\nabla_X(\alpha+\beta)\theta=\nabla_X(\alpha+\beta)\theta'$
+ implies $(\alpha+\beta)\theta=(\alpha+\beta)\theta'$.
+ \end{prop}
+@@ -726,7 +731,7 @@
+ A domain receives $q$ precisely when it receives each $\delta_{ij}$,
+ so $\mathrm{ran}(q)=1_Y$. The preceding equalities give
+ $(\alpha+\beta)\theta q=(\alpha+\beta)\theta' q$.
+-Range agreement therefore gives
++The defining equality property of $\mathrm{ran}(q)=1_Y$ therefore gives
+ $(\alpha+\beta)\theta=(\alpha+\beta)\theta'$.
+ \end{proof}
+ 
+@@ -735,8 +740,8 @@
+ restriction zeros and binary restriction coproducts. Suppose that inverse
+ images of domains along every morphism preserve binary joins and that
+ weak choice holds.
+-If $\alpha,\beta\in\mathrm{Dom}(X)$ satisfy $\alpha\beta=0_X$,
+-then $p=\nabla_X(\alpha+\beta):X+X\to X$ has a unique section
++For every object $X$ and all $\alpha,\beta\in\mathrm{Dom}(X)$ with $\alpha\beta=0_X$,
++the morphism $p=\nabla_X(\alpha+\beta):X+X\to X$ has a unique section
+ $f:X\to X+X$. Moreover, $pf=\rst f=\mathrm{ran}(p)=\alpha\vee\beta$.
+ \end{prop}
+ \begin{proof}
+@@ -804,7 +809,7 @@
+ Let $P_0=1_{FX}+0_{FX}$ and $P_1=0_{FX}+1_{FX}$ be the summand
+ domains on $FX+FX$. The morphisms $P_0s$ and $j_0\Gamma'$ agree
+ after both $\Gamma$ and $\Gamma'$. Since
+-$\mathrm{ran}[\Gamma,\Gamma']=1_{FX}$, range agreement gives
++$\mathrm{ran}[\Gamma,\Gamma']=1_{FX}$, the defining equality property of this range gives
+ $P_0s=j_0\Gamma'$. Likewise $P_1s=j_1\Gamma$. Taking restrictions
+ gives
+ \[
