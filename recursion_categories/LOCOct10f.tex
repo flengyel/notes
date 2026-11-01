@@ -1,0 +1,1002 @@
+\documentclass[letterpaper,10pt]{amsart}
+\usepackage{graphicx}
+\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{tikz-cd}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,microtype}
+\usepackage{needspace}
+\usepackage[hidelinks]{hyperref}
+
+\theoremstyle{plain}
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{cor}{Corollary}[thm]
+\newtheorem{lem}{Lemma}[thm]
+\newtheorem{claim}{Claim}[thm]
+\newtheorem{axiom}{Axiom}[thm]
+\newtheorem{conj}{Conjecture}[thm]
+\newtheorem{fact}{Fact}[thm]
+\newtheorem{hypo}{Hypothesis}[thm]
+\newtheorem{assum}{Assumption}[thm]
+\newtheorem{prop}{Proposition}[thm]
+\newtheorem{crit}{Criterion}[thm]
+\theoremstyle{definition}
+\newtheorem{defn}{Definition}[thm]
+\newtheorem{exmp}{Example}[thm]
+\newtheorem{rem}{Remark}[thm]
+\newtheorem{prob}{Problem}[thm]
+\newtheorem{prin}{Principle}[thm]
+\newtheorem{alg}{Algorithm}[thm]
+\newcommand{\map}[2]{{#1}\rightarrow{#2}}
+\newcommand{\MAP}[3]{{#1}:{#2}\rightarrow{#3}}
+\newcommand{\sento}[2]{{#1}\mapsto{#2}}
+\newcommand{\rst}[1]{\overline{#1}}
+
+\newcommand{\XP}{X^\#}
+\newcommand{\IBAR}{\overline{i}_0}
+\newcommand{\TUR}[1]{\mathrm{Tur}\left({#1}\right)}
+\newcommand{\IT}[1]{\mathrm{It}\left({#1}\right)}
+
+\begin{document}
+\title{Locally connected recursion categories}
+\author{Florian Lengyel}
+\date{Revised 10 October 2026}
+\thanks{Email address: flengyel@gc.cuny.edu}
+\address{The Graduate School and University Center, %
+Ph.D Program in Computer Science, %
+The City University of New York, 365 Fifth Avenue, New York, NY %
+10016}
+
+\begin{abstract}
+In a $P$-recursion category with binary coproducts and ranges, the
+domain of a weak Turing morphism applied to the diagonal has no
+complement when the identity of its underlying object is nonzero.
+We also construct recursively inseparable domains using a range functor
+to a locally connected split restriction category satisfying weak
+choice, in which inverse images of domains preserve binary joins.
+This construction requires each target morphism selecting between the
+images of a complemented source domain and its complement to have a preimage under
+the functor. Joins of source morphisms with disjoint domains suffice
+for this requirement. A counterexample satisfies the remaining
+hypotheses, but the constructed pair is separable and the required
+preimage does not exist.
+
+\bigskip\noindent
+{\it MSC:} 03D75; 03G30
+\end{abstract}
+
+\maketitle
+
+\section{Introduction}
+Di Paola and Heller developed recursion categories as an algebraic
+setting for recursion theory, with the aim of obtaining a categorical
+formulation of incompleteness \cite{MR88i:03078}. Morphisms represent
+partial computations, and restriction idempotents represent their
+domains. Rosolini's $P$-categories provide a more general setting for
+these constructions \cite{coneit,MR90e:18001}, used in subsequent
+existence and relativization theorems
+\cite{MR92e:03067,MR95c:03110,leng}.
+
+We study two diagonal arguments in this setting. The first produces a
+domain with no complement in a $P$-recursion category with binary
+coproducts and ranges, provided that the identity of the underlying
+object is nonzero (Theorem~\ref{ThmNoncomp}). The second produces a
+recursively inseparable pair of domains. Such a pair consists of two
+disjoint domains for which no complemented domain contains the first
+while its complement contains the second.
+
+The inseparability argument uses a range functor, which preserves the
+domain and range operations, to a category satisfying local
+connectedness and weak choice. Under the target hypotheses of
+Theorem~\ref{ThmRecIns}, every complemented source domain determines a
+target morphism that agrees with one coproduct injection on the image
+of the domain and with the other on the image of its complement.
+The lifting hypothesis requires that this morphism
+be the image of a source morphism. Joins of source morphisms with
+disjoint domains suffice for this hypothesis
+(Proposition~\ref{PropDisjointJoins}). The counterexample in
+Section~\ref{sec:counterexample} satisfies the other hypotheses of the
+theorem, but its diagonal pair is separable; the target morphism has
+no source preimage.
+
+\Needspace{6\baselineskip}
+Examples defined by arithmetic provability motivate the use of a
+functor to a locally connected category. Let $T$ be a consistent
+recursively enumerable extension of Peano arithmetic ($\mathrm{PA}$).
+In the category $S_T$, morphisms are equivalence classes of program
+indices: two indices are equivalent precisely when $T$ proves a single
+universally quantified statement asserting that the programs have the
+same domain and values \cite[p.~646]{MR93b:03103}. Montagna's category
+$S$ is the case $T=\mathrm{PA}$ \cite[p.~105]{MR90i:03046}.
+The proposed system $S'_T$, with $S'=S'_{\mathrm{PA}}$, instead uses
+separate proofs of equality at each standard input. Pointwise provable
+equality is not preserved by composition, so these proposed quotients
+do not define categories under that composition
+\cite[Corollary~2]{leng2026composition}.
+
+Di Paola and Montagna prove that $S_T$ is not locally connected for
+any such $T$ \cite[Corollary~4.4]{MR93b:03103}; if $T$ is not
+$\Sigma^0_1$-sound, it has no nonzero connected domains
+\cite[Theorem~4.3(2)]{MR93b:03103}. Heller's existence theorem uses
+local connectedness \cite{MR92e:03067}. These examples therefore
+motivate extending that theorem beyond locally connected categories,
+as proposed in \cite{MR93b:03103} and developed using range functors
+in \cite{leng}.
+
+Section~\ref{sec:preliminaries} introduces restriction categories,
+near products, and Turing morphisms. Section~\ref{sec:diagonal}
+develops the range calculus needed for the noncomplementation theorem
+and proves that theorem. Section~\ref{sec:inseparability} constructs
+the target morphisms, states the lifting hypothesis, and proves the
+inseparability theorem, its sufficient condition, and the counterexample.
+
+\section{Restriction categories and recursion categories}\label{sec:preliminaries}
+
+\subsection{Restriction categories}
+We write $gf$ for the composite that applies $f$ first and then $g$.
+A morphism $e:X\to X$ is \textit{idempotent} if $e^2=e$.
+
+A \textit{restriction category} is a category $\mathbf C$ with an
+operation assigning to each morphism $f:X\to Y$ an endomorphism
+$\rst f:X\to X$, subject to the following axioms whenever the
+composites are defined \cite{MR1871071,MR1963657}.
+
+\noindent\textbf{R1.} $f\rst f=f$.
+
+\noindent\textbf{R2.} $\rst f\rst g=\rst g\rst f$.
+
+\noindent\textbf{R3.} $\rst{g\rst f}=\rst g\rst f$.
+
+\noindent\textbf{R4.} $\rst g f=f\rst{gf}$.
+
+These axioms imply that $\rst f$ is idempotent and that
+$\rst{gf}=\rst{\rst g f}$. The endomorphisms $\rst f$ are called
+\textit{restriction idempotents}, or \textit{domains}. For an object
+$X$, write $\mathrm{Dom}(X)$ for its domains. They form a
+meet-semilattice: $\alpha\le\beta$ means $\alpha\beta=\alpha$, and
+$\alpha\wedge\beta=\alpha\beta$. A morphism $f:X\to Y$ is
+\textit{total} if $\rst f=1_X$; total morphisms form a subcategory
+$\mathbf C_T$.
+
+For parallel morphisms $f,g:X\to Y$, the \textit{restriction order}
+is defined by $f\le g$ if $f=g\rst f$. It restricts to the order
+just defined on domains. A join $f\vee g$, when it exists, is the
+least upper bound in this order.
+
+A \textit{system of zero morphisms} consists of morphisms
+$0_{X,Y}:X\to Y$ such that $g0_{X,Y}f=0_{W,Z}$ for all
+$f:W\to X$ and $g:Y\to Z$. Such a system is unique when it exists.
+We write $0_X=0_{X,X}$ and use \textit{restriction zeros}, which
+satisfy $\rst{0_{X,Y}}=0_X$. Domains $\alpha,\beta$ on $X$ are
+\textit{disjoint} if $\alpha\beta=0_X$; parallel morphisms $f,g$
+have \textit{disjoint domains} if $\rst f\rst g=0_X$.
+A morphism $f:X\to Y$ is \textit{weakly total} if $fg=0$ implies
+$g=0$ for every $g:Z\to X$.
+
+A restriction category is \textit{split} if each domain
+$\varepsilon:X\to X$ has a splitting $\varepsilon=me$, where
+$e:X\to Z$, $m:Z\to X$, and $em=1_Z$. The map $m$ is then a
+total monomorphism.
+
+Binary \textit{restriction coproducts} are categorical coproducts with
+total injections $i_0:X\to X+Y$ and $i_1:Y\to X+Y$. For morphisms
+$f:X\to Z$ and $g:Y\to Z$, write $[f,g]:X+Y\to Z$ for their
+cotuple. The \textit{codiagonal} is
+$\nabla_X=[1_X,1_X]:X+X\to X$; thus $[f,g]=\nabla_Z(f+g)$.
+Restrictions satisfy $\rst{f+g}=\rst f+\rst g$.
+
+Cockett and Lack's restriction categories \cite{MR1871071,MR1963657},
+equivalently Stefani's RDP-categories \cite{MR2003a:18003}, describe
+domains by this unary operation. We next recall the near products and
+diagonals needed to define Turing morphisms.
+
+\subsection{\texorpdfstring{$P$}{P}-categories}
+Let $\mathbf{C}$ be a category. The {\it diagonal functor}
+$\MAP{\Delta_\mathbf{C}}{\mathbf C}{\mathbf{C}\times\mathbf{C}}$
+is given on objects by $\sento{A}{(A,A)}$ and on morphisms by
+$\sento{f}{(f,f)}$.
+
+A {\it P-category} consists of a category $\mathbf{C}$ together
+with a bifunctor $\MAP{\times}{\mathbf{C}\times\mathbf{C}}{\mathbf
+C}$, called a {\it near product}, a natural transformation
+$\MAP{\Delta}{1_\mathbf{C}}{\times\circ\Delta_{\mathbf C}}$, and
+for each object $X$ of $\mathbf{C}$, natural transformations
+\[
+\begin{array}{ll}
+p_{0 (\ ),X}:{(\ )\times X}\rightarrow{1_{\mathbf{C}}}, & 
+p_{1 X, (\ )}:{X\times (\ ) }\rightarrow{1_{\mathbf{C}}}
+\end{array}
+\]
+such that the conditions i), ii) and iii) below are satisfied ~\cite{coneit}.
+
+For morphisms $f:X\to Y$ and $g:X\to Z$, put
+$\langle f,g\rangle=(f\times g)\Delta_X:X\to Y\times Z$.
+
+i) The following equations hold.
+\[
+\begin{array}{ll} %
+p_{0 X,X}\Delta_X=1_X=p_{1 X, X}\Delta_X, & (p_{0 X,Y}\times
+p_{1 X,Y})\Delta_{X\times Y}=1_{X\times Y},\\
+p_{0 X,Y}(1_X\times p_{0 Y,Z})=p_{0 X,Y\times Z}, & p_{0
+X,Z}(1_X\times p_{1 Y,Z})=p_{0 X,Y\times Z},\\
+p_{1 X,Z}(p_{0 X,Y}\times 1_Z)=p_{1 X\times Y, Z}, & p_{1
+Y,Z}(p_{1 X,Y}\times1_Z )=p_{1 X\times Y, Z}.
+\end{array}
+\]
+
+ii) There is an isomorphism of functors
+$\mathrm{ass}_\times:((-\times-)\times-)\Rightarrow(-\times(-\times-))$
+from $\mathbf C^3$ to $\mathbf C$, whose component
+$\mathrm{\mathrm{ass}_\times}_{X,Y,Z}$  is given by
+\begin{align*}
+\MAP{{\langle p_{0 X,Y} p_{0 X\times Y,Z}, %
+      \langle p_{1 X,Y} p_{0 X\times Y,Z}, %
+       p_{1 X\times Y,Z}\rangle\rangle }}{ (X \times Y )\times Z}{ X\times (Y \times Z)},%
+\end{align*}
+iii) Let $T$ be the endofunctor on
+$\mathbf{C}\times\mathbf{C}$ given by $\sento{(X,Y)}{(Y,X)}$.
+There is an isomorphism
+$\mathrm{tr}_\times:\times\Rightarrow\times\circ T$ of functors
+from $\mathbf C^2$ to $\mathbf C$, with component
+$\mathrm{tr}_{\times X,Y}=\langle p_{1X,Y},p_{0X,Y}\rangle:
+X\times Y\to Y\times X$.
+The isomorphisms $\mathrm{\mathrm{ass}_\times}$ and $\mathrm{tr}_\times$ are 
+natural in each of their component variables. 
+
+The induced restriction of a morphism $\varphi:X\to Y$ is
+$\rst\varphi=p_0(1_X\times\varphi)\Delta_X
+=p_1(\varphi\times1_X)\Delta_X$. This operation satisfies
+R1--R4 \cite{MR88i:03078,coneit}.
+
+The near product restricts to a categorical product on
+$\mathbf C_T$ \cite{coneit}. 
+
+In general, a $P$-category is equivalent to one obtained from a
+category with products, following a procedure analogous to that by
+which the category $\mathbf{Pfn}$ of sets and partial functions
+can be obtained from the category $\mathbf{Set}$ of sets 
+~\cite[Theorem 1.2]{MR90e:18001}.
+
+The projection $p_0$ is natural in the first variable, and $p_1$ is
+natural in the second. Thus $p_0(\varphi\times1_X)=\varphi p_0$,
+whereas $p_1(\varphi\times1_X)=1_Xp_1$ can fail: the right-hand
+side is total, while the left-hand side need not be. In
+general, the projections $p_{i,X,Y}$ of a $P$-category
+$\mathbf{C}$ are natural in both variables if and only if for any morphisms
+$\MAP{\varphi_i}{Y}{X_i}$ ($i=0,1$) in 
+$\mathbf{C}$, $p_i\langle \varphi_0,\varphi_1\rangle = \varphi_i$.
+Cockett and Lack observe that $P$-categories are ``symmetric monoidal categories
+in which each object has a monoidal natural cocommutative coassociative
+comultiplication (and possibly an unnatural counit)'' ~\cite{MR1871071}.
+
+A $P$-category \textit{has coproducts} if its induced restriction
+category has binary restriction coproducts. It is \textit{prodominical}
+if it has zero morphisms and $\phi\times0_{C,D}=0_{A\times C,B\times D}$
+for every morphism $\phi:A\to B$ \cite{MR92e:03067}. We assume
+throughout that our $P$-categories are prodominical. Their zero domains
+are the least elements of $\mathrm{Dom}(X)$.
+
+A prodominical category is \textit{dominical} if every weakly total
+morphism is total and $f\times g=0$ implies $f=0$ or $g=0$
+\cite[p.~36]{leng}.
+
+A category is \textit{isotypical} if any two of its objects are isomorphic.
+
+\subsection{Turing morphisms and \texorpdfstring{$P$}{P}-recursion categories}
+A {\it Turing morphism} in a prodominical isotypical $P$-category is a morphism %
+$\MAP{\tau}{W\times X}{Y}$ such that for any $\MAP{\phi}{V\times
+X}{Y}$ there exists a total $\MAP{g}{V}{W}$, such that the
+following diagram commutes.
+\[
+\begin{tikzcd}
+V\times X \arrow[r,"g\times1_X"] \arrow[dr,"\phi"']
+  & W\times X \arrow[d,"\tau"] \\
+  & Y
+\end{tikzcd}
+\]
+
+A {\it $P$-recursion category} (or, simply, a {\it recursion
+category}) is a prodominical isotypical $P$-category  which contains a Turing
+morphism. Previously, the term {\it recursion category}
+was used for dominical $P$-recursion categories; for us a recursion category
+is always a $P$-recursion category. The prototypical example of a Turing morphism $\MAP{t}{X\times X}{X}$ is the universal partial function of classical 
+recursion theory ~\cite[Theorem II.1.8, page 132]{MR90d:03072}. Examples of Turing morphisms and recursion categories are given in ~\cite{MR88i:03078,MR90i:03046,MR92e:03067,MR93b:03103,MR95c:03110,leng}.
+
+A morphism $t:X\times X\to X$ is \textit{weak Turing} if, for every
+$f:X\to X$, there is a total morphism $e:X\to X$ such that
+\begin{equation}\label{DefWeak}
+\begin{tikzcd}
+X\times X \arrow[r,"e\times1_X"] \arrow[d,"p_{1,X,X}"']
+  & X\times X \arrow[d,"t"] \\
+X \arrow[r,"f"'] & X
+\end{tikzcd}
+\end{equation}
+commutes. Such an $e$ is a \textit{$t$-index} of $f$. The morphism $t$
+is \textit{idempotent weak Turing} if every $f$ has an idempotent
+$t$-index. Every Turing morphism of type $X\times X\to X$ is weak
+Turing; conversely, a Turing morphism can be obtained from a weak Turing
+morphism \cite[Lemma 9.1]{MR92e:03067}.
+
+For every total $t$-index $e$ of $f$, precomposing
+\eqref{DefWeak} with $\langle1_X,e\rangle$ gives
+\begin{equation}\label{EqDiagonalIndex}
+t\Delta_Xe=fe.
+\end{equation}
+Indeed, $(e\times1_X)\langle1_X,e\rangle=\Delta_Xe$ and
+$p_{1,X,X}\langle1_X,e\rangle=e$. This identity will be used in
+both diagonal arguments.
+
+\begin{prop}\label{IdempotentTheorem}
+Every $P$-recursion category $\mathbf{C}$ has an idempotent weak
+Turing morphism $t$, together with a mapping $N$ such that for
+every $t$-index $e$ of $\varphi$ in $\mathbf{C}$, $N(e)$ is an
+idempotent $t$-index of $\varphi$.
+\end{prop}
+\begin{proof}
+Choose a Turing morphism $\tau:X\times X\to X$, put $Y=X\times X$,
+and choose an isomorphism $a:Y\to X$. Let $q_0,q_1:Y\to X$ be
+the projections. The morphism
+$t=a^{-1}\tau(q_1\times a):Y\times Y\to Y$ is Turing: given
+$f:V\times Y\to Y$, apply the
+parameterization property of $\tau$ to
+$af(1_V\times a^{-1}):V\times X\to X$, and duplicate the resulting
+parameter map to obtain a map $V\to Y$.
+
+For a total $t$-index $e:Y\to Y$, put
+$k=q_1e\Delta_X:X\to X$ and $N(e)=\langle q_0,kq_0\rangle:Y\to Y$.
+Then $q_0N(e)=q_0$, so $N(e)^2=N(e)$. If $e$ indexes
+$f:Y\to Y$, precomposing its index equation with
+$(\Delta_Xq_0)\times1_Y$ gives
+$a^{-1}\tau(kq_0\times a)=fp_{1,Y,Y}$.
+The left-hand side is $t(N(e)\times1_Y)$, so $N(e)$ is an
+idempotent $t$-index of $f$.
+\end{proof}
+
+\section{Ranges and the diagonal domain}\label{sec:diagonal}
+
+We first record the properties of ranges needed for the diagonal argument.
+
+\subsection{Ranges}\label{sec:ranges}
+In this subsection, ranges are defined in a restriction category with
+restriction zeros and binary restriction coproducts. The definition
+applies in particular to the $P$-categories under consideration.
+
+For a morphism $\phi:X\to Y$ and $\varepsilon\in\mathrm{Dom}(Y)$, we write
+$\phi\prec\varepsilon$ if and only if $\varepsilon\phi=\phi$; we
+say that $\varepsilon$ {\it receives} $\phi$. If $\varepsilon$
+receives $\phi$, and in addition, $\varepsilon$ satisfies for all
+appropriate $\psi,\psi'$, $\psi\phi=\psi'\phi$ implies
+$\psi\varepsilon=\psi'\varepsilon,$ then $\varepsilon$ is the
+least domain in $\mathrm{Dom}(Y)$ receiving $\phi$. In this case
+we say that $\phi$ has range $\varepsilon$ and we write
+$\mathrm{ran}\phi=\varepsilon$.
+
+The relation $\prec$ agrees with $\le$ on domains. It has the following transitivity property.
+
+\begin{prop}\label{PropRec}
+If $\MAP{\phi}{X}{Y}$ is a morphism and $\beta,\gamma$ are domains
+in $Y$ such that $\phi\prec\beta$ and $\beta\le\gamma$, then
+$\phi\prec\gamma$.
+\end{prop}
+\begin{proof}
+We have
+$\phi=\beta\phi=(\beta\gamma)\phi=\gamma(\beta\phi)=\gamma\phi$,
+so that $\phi\prec\gamma$. 
+\end{proof}
+
+A restriction category has ranges if every morphism has a range in the sense above.
+For a $P$-category $\mathbf C$, we require in addition that
+for morphisms $\phi,\psi$ of $\mathbf{C}$,
+$\mathrm{ran}(\phi\times\psi)=\mathrm{ran}\phi\times\mathrm{ran}\psi$,
+so that ranges are compatible with the near product. Such a category has a calculus of ranges
+~\cite{MR92e:03067,MR88i:03078}. 
+
+In a restriction category with coproducts and
+ranges, the meet-semilattice $\mathrm{Dom}(X)$ becomes a
+distributive lattice if one defines the join by
+$\varepsilon\vee\delta=\mathrm{ran}[\varepsilon,\ \delta]$ for
+$\varepsilon,\delta\in\mathrm{Dom}(X)$
+~\cite{MR88i:03078,MR92e:03067}. The next statement follows
+from the definition of range ~\cite[Proposition
+5.4]{MR88i:03078}.
+
+\begin{prop}\label{PropDomRan}
+If $\varepsilon$ is a domain in $\mathrm{Dom}(Y)$ and
+$\MAP{\varphi}{X}{Y}$ is any morphism, then
+$\mathrm{ran}(\varepsilon\varphi)=\varepsilon
+\mathrm{ran}(\varphi)$.
+\end{prop}
+\begin{proof}
+Put $r=\mathrm{ran}(\varphi)$ and $s=\mathrm{ran}(\varepsilon\varphi)$.
+The domain $\varepsilon r$ receives $\varepsilon\varphi$, so
+$s\le\varepsilon r$. Conversely, $s\varepsilon\varphi=\varepsilon\varphi$;
+the equality property of $r$ gives $s\varepsilon r=\varepsilon r$.
+Hence $\varepsilon r\le s$.
+\end{proof}
+
+The least-receiving property shows that
+$\mathrm{ran}[\alpha,\beta]$ is the join of $\alpha$ and $\beta$.
+The proposition gives distributivity, since
+$\varepsilon(\alpha\vee\beta)=\mathrm{ran}[\varepsilon\alpha,
+\varepsilon\beta]=\varepsilon\alpha\vee\varepsilon\beta$.
+
+A domain $\gamma\in\mathrm{Dom}(X)$ is \textit{complemented} if
+there is a domain $\gamma^\perp$ with
+$\gamma\vee\gamma^\perp=1_X$ and $\gamma\gamma^\perp=0_X$.
+Distributivity makes this complement unique.
+
+The next fact follows from the preceding.
+
+\begin{prop}\label{PropExpected}
+For any morphisms $\MAP{\varphi}{X}{Y},\MAP{\psi}{Y}{Z}$,
+$\psi\varphi = 0$ if and only if
+$\rst{\psi}\mathrm{ran}(\varphi)=0$.
+\end{prop}
+\begin{proof}
+If $\rst{\psi}\mathrm{ran}(\varphi)=0$, then
+$\psi\varphi=\psi\rst{\psi}\mathrm{ran}(\varphi)\varphi=0$.
+Conversely, if $\psi\varphi=0$, then
+$0=\rst{\psi\varphi}=\rst{\rst{\psi}\varphi}$ by the restriction identity $\rst{gf}=\rst{\rst g f}$, which implies that $\rst{\psi}\varphi=0$.
+Take ranges and apply the preceding proposition.
+\end{proof}
+
+For a morphism $f:X\to Y$, define its \textit{inverse image} and
+\textit{image} on domains by
+$f^*\beta=\rst{\beta f}$ and $f_*\alpha=\mathrm{ran}(f\alpha)$.
+Inverse image preserves meets, and image preserves joins. In a
+$P$-category with coproducts and ranges, inverse image also preserves
+binary joins \cite{MR88i:03078,MR92e:03067}. Whenever the target is
+a restriction category without a specified near product, we require
+this last property explicitly.
+The following fact will be used below ~\cite[Cor. 5.6 (iii)]{MR88i:03078}.
+\begin{prop}\label{PropImageFact}
+Let $\MAP{\phi}{X}{Y}$ be a morphism, and let $\alpha\in\mathrm{Dom}(X)$ and  $\beta\in\mathrm{Dom}(Y)$, then
+$\phi_*(\alpha)\beta =\phi_*(\alpha\phi^*\beta)$.
+\end{prop}
+\begin{proof}
+By R4 and commutativity of domains,
+$\phi\alpha\phi^*\beta=\beta\phi\alpha$.
+Take ranges and apply Proposition~\ref{PropDomRan}.
+\end{proof}
+
+For ${\phi}$ total we have 
+that $\phi_*$ is left adjoint to $\phi^*$ ~\cite{MR92e:03067}.
+
+\begin{prop}
+If $\MAP{\phi}{X}{Y}$ is total in a restriction category with ranges, then for each
+$\alpha\in\mathrm{Dom}(X)$ and for each $\beta\in\mathrm{Dom}(Y)$,
+$\phi_*\alpha\le\beta$ if and only if $\alpha\le\phi^*\beta$.
+\end{prop}
+
+Adjointness follows from the next proposition.
+
+\begin{prop}\label{propsemiadjointness}
+If $\MAP{\phi}{X}{Y}$ is a morphism in a restriction category $\mathbf{C}$ with ranges, then for each
+$\alpha\in\mathrm{Dom}(X)$ and for each $\beta\in\mathrm{Dom}(Y)$,
+
+a) $\phi_*\alpha\le\beta$ implies  $\alpha\phi^*\beta=\alpha\rst{\phi}$; and
+
+b) $\alpha\le\phi^*\beta$ implies $\phi_*\alpha\le\beta$.
+\end{prop}
+
+\begin{proof}
+For a), the condition implies $\beta\mathrm{ran}(\phi\alpha)=\mathrm{ran}(\phi\alpha)$. Composing on the right with $\phi\alpha$, we have $\beta\phi\alpha=\phi\alpha$. Taking restrictions gives
+$\rst{\beta\phi}\alpha=\rst{\beta\phi\alpha}
+=\rst{\phi\alpha}=\rst\phi\alpha$.
+
+Assertion b) follows from Proposition \ref{PropImageFact}. 
+\end{proof}
+
+\subsection{A domain with no complement}
+\Needspace{12\baselineskip}
+\begin{thm}\label{ThmNoncomp}
+Let $\mathbf C$ be a $P$-recursion category with binary coproducts
+and ranges. If $t:X\times X\to X$ is weak Turing and
+$1_X\ne0_X$, then $\rst{t\Delta_X}$ is not complemented.
+\end{thm}
+\begin{proof}
+Put $h=t\Delta_X$ and $\kappa=\rst h$. Suppose that a domain
+$\varepsilon$ complements $\kappa$, and choose a total $t$-index
+$e:X\to X$ of $\varepsilon$. Equation~\eqref{EqDiagonalIndex}
+gives $he=\varepsilon e$, and hence
+$e^*\kappa=\rst{he}=\rst{\varepsilon e}=e^*\varepsilon$.
+Since $e$ is total and inverse image preserves meets and binary joins,
+these equal domains have meet $0_X$ and join $1_X$. Therefore
+$1_X=0_X$, a contradiction.
+\end{proof}
+
+A domain $\delta\in\mathrm{Dom}(X)$ is a \textit{quasicomplement}
+of $\varepsilon\in\mathrm{Dom}(X)$ if $\delta\varepsilon=0_X$ and,
+for every $\phi:Y\to X$, equality $\varepsilon\phi=\delta\phi$
+implies $\phi=0$.
+Di Paola and Heller proved that in a dominical recursion category the
+diagonal domain has no quasicomplement
+\cite[Corollary~8.6]{MR88i:03078}. Complements and quasicomplements
+coincide in a dominical category.
+
+\begin{prop}
+In a $P$-category with a system of zeros, binary coproducts and ranges, the following assertions are equivalent.
+
+(i) Weakly total morphisms are total.
+
+(ii) ~\cite[Proposition 5.3]{MR88i:03078} If $\varepsilon\in\mathrm{Dom}(X)$ satisfies $\varepsilon\ne1_X$, there exists $\delta\in\mathrm{Dom}(X)$ with $\delta\ne0$ and $\varepsilon\delta=0$.
+
+(iii) ~\cite[Proposition 7.3]{MR88i:03078} Complements and quasicomplements coincide.
+\end{prop}
+
+Rosolini has written in  ~\cite[page 313]{MR90e:18001} that in view of his representation Theorem 2.8 ({\it loc. cit.}), all the results of section 5 of ~\cite{MR88i:03078} ``...can be generalized to $P$-categories with ranges stable under products by checking that they hold in a $P$-category of the form
+$\mathcal{M}$--$\mathrm{Ptl}(\mathbf{A})$.'' The ranges in $S$ are defined
+by existential quantification of graph formulas \cite[p.~111]{MR90i:03046}
+and are stable under products, since the two coordinate variables can
+be quantified independently. The preceding proposition,
+together with Montagna's weakly total non-total morphism in $S$
+\cite[Example~1, p.~112]{MR90i:03046}, shows that Proposition~5.3 of
+\cite{MR88i:03078} does not extend to this generality. Theorem~\ref{ThmNoncomp} gives the noncomplementation result directly.
+
+\section{Recursively inseparable domains and local connectedness}\label{sec:inseparability}
+
+Let $\mathbf C$ be a $P$-recursion category with coproducts and ranges.
+A disjoint pair $(\alpha,\beta)$ in $\mathrm{Dom}(X)$ is
+\textit{recursively separable} if there is a complemented domain
+$\gamma\in\mathrm{Dom}(X)$ with $\alpha\le\gamma$ and
+$\beta\le\gamma^\perp$. It is \textit{recursively inseparable}
+if no such $\gamma$ exists.
+
+\subsection{Connected domains}
+Connected domains are a surrogate in $P$-categories for points; they  first appeared in ~\cite{MR92e:03067} and subsequently in ~\cite{MR93b:03103,leng}.
+A domain $\alpha$ is \textit{connected} if every decomposition
+$\alpha=\beta\vee\gamma$ with $\beta\gamma=0$ has $\beta=0$ or
+$\gamma=0$. The zero domain is connected. A restriction category with
+ranges and binary restriction coproducts is \textit{locally connected}
+if, for all $f,g:X\to Y$, equality $f\alpha=g\alpha$ for every
+connected domain $\alpha$ on $X$ implies $f=g$ \cite{MR92e:03067}.
+When inverse images preserve binary joins, total morphisms preserve
+connected domains under direct image. This gives the following
+alternatives for a morphism into a coproduct.
+
+\begin{prop}\label{PropAlternative}
+Let $\mathbf C$ be a restriction category with ranges, restriction zeros,
+and binary restriction coproducts, in which inverse images of domains
+preserve binary joins. Suppose that $\alpha\in\mathrm{Dom}(X)$ is
+connected.
+
+\noindent(i) If $\MAP{f}{X}{Y}$ is total, then $f_*\alpha$ is connected.
+
+\noindent(ii) If $\MAP{f}{X}{Y + Z}$ is total,
+then $f_*\alpha\le 1_Y+0_Z$ or $f_*\alpha\le 0_Y+ 1_Z$.
+
+\noindent(iii) If $\MAP{f}{X}{Y+ Z}$ is total,
+then $f\alpha\prec 1_Y+0_Z$ or $f\alpha\prec 0_Y+1_Z$.
+\end{prop}
+
+\begin{proof}
+The proof of (i) uses adjointness and Proposition \ref{PropImageFact}.
+Suppose that $f_*\alpha=\beta\vee\gamma$ with $\beta\gamma=0$. Since $f$ is total, by
+adjointness, $\alpha\le
+f^*(\beta\vee\gamma)=f^*\beta\vee f^*\gamma$;
+equivalently, $\alpha=\alpha f^*\beta\vee\alpha f^*\gamma$. We
+have that
+$\alpha(f^*\beta)\alpha(f^*\gamma)=\alpha f^*(\beta\gamma)=\alpha\rst{0f}=0$.
+Therefore, either $\alpha f^*\beta=0$ or $\alpha f^*\gamma=0$.
+If $\alpha f^*\beta=0$, then
+$0=f_*(\alpha f^*\beta)=f_*(\alpha)\beta=(\beta\vee\gamma)\beta=\beta$.
+Similarly, if $\alpha f^*\gamma=0$, $\gamma=0$.
+
+For (ii), note that $f_*\alpha=f_*\alpha\wedge(1_Y+
+1_Z)=f_*\alpha\wedge((1_Y+ 0)\vee(0+ 1_Z))
+=(f_*\alpha\wedge(1_Y+ 0))\vee (f_*\alpha\wedge(0+ 1_Z))$;
+the conclusion follows from (i).
+
+For (iii), note that $f_*\alpha$ is a range, so that $f\alpha\prec
+f_*\alpha$; i.e., $(f_*\alpha)f\alpha =f\alpha$. The result
+follows from (ii) and Proposition \ref{PropRec}.
+\end{proof}
+
+\subsection{Range functors}
+Let $\mathbf C$ and $\mathbf D$ be restriction categories with ranges,
+restriction zeros, and binary restriction coproducts. A \textit{range
+functor} $F:\mathbf C\to\mathbf D$ preserves restrictions, ranges,
+zeros, and binary coproducts. It preserves total morphisms, meets and
+joins of domains, and complements. We identify $F(X+Y)$ with
+$FX+FY$ through its canonical coproduct comparison. For $P$-categories,
+preservation of the near product is not required; examples occur in
+categories of coalgebras \cite{leng}.
+
+The \textit{kernel} of $F$ is
+$\ker F=\{f:X\to Y\mid Ff=0_{FX,FY}\}$; it is closed under
+composition on either side.
+
+\begin{prop}\label{PropKernel}
+If $F:\mathbf{C}\rightarrow\mathbf{D}$ is a range functor and if $\mathbf{D}$
+is locally connected, then for each object $X$ in $\mathbf{C}$ such that $1_X\notin\ker F$, there exists a nonzero connected domain in $\mathrm{Dom}(FX)$.
+\end{prop}
+
+\begin{proof}
+Suppose that $0$ is the only connected domain in $\mathrm{Dom}(FX)$. Then $1_{F X}0 = 0$, which implies that $F1_X = 1_{F X} = 0$, since $\mathbf{D}$ is locally connected. But then
+$1_X\in\ker F$, contradiction.  
+\end{proof}
+
+\subsection{Sections and weak choice}
+In a restriction category, a {\it section} of a morphism
+$\MAP{\phi}{X}{Y}$  is a morphism $\MAP{\sigma}{Y}{X}$ such that
+$\phi\sigma=\rst\sigma$ and $\phi\sigma\phi=\phi$. It follows that
+$\rst{\sigma}=\mathrm{ran}(\phi)$. A
+restriction category satisfies the {\it axiom of choice} if every morphism
+has a section. A morphism  $\MAP{\phi}{X}{Y}$ is a {\it partial monomorphism}
+if for all morphisms $\theta,\theta'$, $\phi\theta=\phi\theta'$ implies $\rst{\phi}\theta=\rst{\phi}\theta'$.
+A restriction category satisfies the \textit{weak axiom of choice},
+or \textit{weak choice}, if every partial monomorphism has a section.
+
+In classical recursion theory, to check that the partial recursive function $\phi$ is a partial monomorphism, it suffices to check that for all (total) recursive functions $\theta,\theta'$, $\phi\theta=\phi\theta'$ implies $\rst\phi\theta=\rst\phi\theta'$. This follows from the fact that a recursively enumerable set is either empty or the image of a total recursive function. The following is a generalization.
+
+\begin{prop}\label{PropPartialMono}
+Let $\mathbf{C}$ be a split restriction category, and let $\MAP{f}{X}{Y}$ be a morphism in $\mathbf{C}$. Suppose that for all morphisms $g,h\in\mathbf{C}_T$, $f g=f h$ implies $\rst{f} g=\rst{f}h$. 
+Then $f$ is a partial monomorphism.
+\end{prop}
+
+\begin{proof}
+Let $g,h:W\to X$ satisfy $fg=fh$. Split the common restriction
+$\varepsilon=\rst{fg}=\rst{fh}$ as $\varepsilon=me$, where
+$e:W\to Z$, $m:Z\to W$, and $em=1_Z$. Since $m$ is a total monomorphism,
+$\rst{fgm}=\rst{\varepsilon m}=\rst m=1_Z$.
+Consequently $fgm$ and $fhm$ are total. 
+Therefore
+$g m$ and $h m$ are total. By the hypothesis, $\rst{f}g m = \rst{f}h m$. Moreover,
+\[
+\rst{f}g = \rst{f}g\rst{\rst{f}g} = \rst{f}g\rst{fg}
+         = \rst{f}gme =\rst{f}hme =\rst{f}h\rst{fh}
+         =\rst{f}h\rst{\rst{f}h} = \rst{f}h.
+\]
+Therefore, $f$ is a partial monomorphism.
+\end{proof}
+
+\begin{prop}
+Suppose that $\mathbf C$ is a locally connected restriction category
+with restriction zeros and binary restriction coproducts, in which
+inverse images of domains preserve binary joins. 
+Suppose that $\alpha$ and $\beta$ are domains in $X$ such that $\alpha\beta=0_X$.
+For total morphisms $\theta,\theta':Y\to X+X$, equality
+$\nabla_X(\alpha+\beta)\theta=\nabla_X(\alpha+\beta)\theta'$
+implies $(\alpha+\beta)\theta=(\alpha+\beta)\theta'$.
+\end{prop}
+
+\begin{proof}
+First observe that since $\alpha\beta=0$,
+\begin{align}\label{orthog1}
+\nabla_X(\alpha+0)\theta=\alpha\nabla_X(\alpha+\beta)\theta=\alpha\nabla_X(\alpha+\beta)\theta'
+=\nabla_X(\alpha+0)\theta';
+\end{align}
+similarly,
+\begin{align}\label{orthog2}
+\nabla_X(0+\beta)\theta=\nabla_X(0+\beta)\theta'.
+\end{align}
+
+Let $\gamma$ be a connected domain in $Y$. Proposition~\ref{PropAlternative}
+applies to the total maps $\theta$ and $\theta'$. Up to symmetry,
+there are two cases.
+
+\noindent{\sc Case one:} $\theta\gamma\prec1_X+0$ and $\theta'\gamma\prec0+1_X$.
+By equation (\ref{orthog1}),
+\[
+\nabla_X(\alpha+\beta)\theta\gamma=\nabla_X(\alpha+0)\theta\gamma
+=\nabla_X(\alpha+0)\theta'\gamma=\nabla_X(0+0)\theta'\gamma=0.
+\]
+By equation (\ref{orthog2}),
+\[
+\nabla_X(\alpha+\beta)\theta'\gamma=\nabla_X(0+\beta)\theta'\gamma
+=\nabla_X(0+\beta)\theta\gamma=\nabla_X(0+0)\theta'\gamma=0.
+\]
+It follows that
+\begin{align*}
+(\alpha+\beta)\theta\gamma&=(\alpha+0)\theta\gamma=i_0\nabla_X(\alpha+0)\theta\gamma=0\\
+&=i_1\nabla_X(0+\beta)\theta'\gamma=(0+\beta)\theta'\gamma=(\alpha+\beta)\theta'\gamma.
+\end{align*}
+
+\noindent{\sc Case two:} $\theta\gamma\prec1_X+0$ and $\theta'\gamma\prec1_X+0$. By equation (\ref{orthog1}),
+\begin{align*}
+(\alpha+\beta)\theta\gamma&=(\alpha+0)\theta\gamma=i_0\nabla_X(\alpha+0)\theta\gamma\\
+&=i_0\nabla_X(\alpha+0)\theta'\gamma=(\alpha+0)\theta'\gamma=(\alpha+\beta)\theta'\gamma.
+\end{align*}
+
+Since $\gamma$ is an arbitrary connected domain in $Y$ and $\mathbf{C}$ is locally connected,  $(\alpha+\beta)\theta=(\alpha+\beta)\theta'$.
+\end{proof}
+
+\begin{prop}\label{PropCopOut}
+Let $\mathbf C$ be a locally connected split restriction category with
+restriction zeros and binary restriction coproducts. Suppose that inverse
+images of domains preserve binary joins and that weak choice holds.
+If $\alpha,\beta\in\mathrm{Dom}(X)$ satisfy $\alpha\beta=0_X$,
+then $p=\nabla_X(\alpha+\beta):X+X\to X$ has a unique section
+$f:X\to X+X$. Moreover, $pf=\rst f=\mathrm{ran}(p)=\alpha\vee\beta$.
+\end{prop}
+\begin{proof}
+The preceding proposition and Proposition~\ref{PropPartialMono} show
+that $p$ is a partial monomorphism; here $\rst p=\alpha+\beta$.
+Weak choice supplies a section $f$. By R4 and the section equations,
+$\rst p\,f=f\rst{pf}=f\rst f=f$.
+If $f'$ is another section, then $pf=pf'=\mathrm{ran}(p)$;
+partial monicity yields $f=\rst p\,f=\rst p\,f'=f'$.
+Finally, $\mathrm{ran}(p)=\alpha\vee\beta$ by the definition of join.
+\end{proof}
+
+\begin{prop}\label{PropDichotomy}
+Let $\mathbf C$ satisfy the hypotheses of Proposition~\ref{PropCopOut},
+and let $\alpha\in\mathrm{Dom}(X)$ be complemented. The section
+$f:X\to X+X$ of $p=\nabla_X(\alpha^\perp+\alpha)$ is total and satisfies $f\alpha=i_1\alpha$ and
+$f\alpha^\perp=i_0\alpha^\perp$.
+\end{prop}
+\begin{proof}
+Proposition~\ref{PropCopOut} gives $\rst f=1_X$ and $pf=1_X$.
+Since $p(f\alpha)=\alpha=p(i_1\alpha)$, partial monicity gives
+$\rst p\,f\alpha=\rst p\,i_1\alpha$.
+The left-hand side is $f\alpha$, and the right-hand side is
+$i_1\alpha$. The equation for $\alpha^\perp$ follows in the same way.
+\end{proof}
+
+\subsection{The inseparability theorem}
+Di Paola and Heller proved the existence of
+recursively inseparable domains in a dominical recursion category
+$\mathbf{C}$ with coproducts, under the assumption that $\mathbf{C}$ satisfies the
+axiom of choice ~\cite[Theorem 8.15]{MR88i:03078}. Rosolini removed the requirement that $\mathbf{C}$ be dominical and that products distribute over coproducts, 
+provided domains split in $\mathbf{C}$ ~\cite{MR90e:18001}.
+
+\begin{thm}\label{ThmRecIns}
+Let $\mathbf C$ be a $P$-recursion category with binary coproducts and
+ranges. Let $\mathbf D$ be a locally connected split restriction category
+with ranges, restriction zeros, and binary restriction coproducts,
+satisfying weak choice, in which inverse images of domains preserve
+binary joins. Let $F:\mathbf C\to\mathbf D$ be a range functor,
+$t:X\times X\to X$ a weak Turing morphism in $\mathbf C$ with
+$1_X\notin\ker F$, and $b:X\to X+X$ an isomorphism.
+
+For each complemented $\gamma\in\mathrm{Dom}(X)$, let
+$s_\gamma:FX\to F(X+X)$ be the unique section of
+$\nabla_{FX}(F\gamma^\perp+F\gamma)$, identifying $F(X+X)$ with
+$FX+FX$. Assume the \textit{lifting hypothesis}: for every such
+$\gamma$, there exists a morphism $d_\gamma:X\to X+X$ in
+$\mathbf C$ such that $Fd_\gamma=s_\gamma$. Then the domains
+\[
+\alpha=(bt\Delta_X)^*(1_X+0_X),\qquad
+\beta=(bt\Delta_X)^*(0_X+1_X)
+\]
+form a recursively inseparable pair in $\mathrm{Dom}(X)$.
+\end{thm}
+\begin{proof}
+Put $h=bt\Delta_X:X\to X+X$. Since inverse image preserves meets
+and zero, $\alpha\beta=h^*((1_X+0_X)(0_X+1_X))=0_X$.
+Suppose that a complemented domain $\gamma$ separates the pair. Put
+$\Gamma=F\gamma$, $\Gamma'=F\gamma^\perp$, and $s=s_\gamma$.
+Proposition~\ref{PropDichotomy} gives
+$s\Gamma=i_1\Gamma$ and $s\Gamma'=i_0\Gamma'$, and $s$ is total.
+
+By the lifting hypothesis, choose $d_\gamma:X\to X+X$ with
+$Fd_\gamma=s$, and put $u=b^{-1}d_\gamma:X\to X$.
+Then $Fu=(Fb)^{-1}s$. Choose a total $t$-index $e:X\to X$ of $u$.
+Equation~\eqref{EqDiagonalIndex} gives $t\Delta_Xe=ue$.
+Writing $H=Fh$ and $E=Fe$, we obtain $HE=sE$.
+By Proposition~\ref{PropKernel}, there is a nonzero connected domain
+$\delta$ on $FX$. Since $E$ is total, $\rst{E\delta}=\delta$,
+so $E\delta\ne0$. Proposition~\ref{PropAlternative} shows that
+$r=\mathrm{ran}(E\delta)$ is nonzero and connected.
+Composing $HE=sE$ with $\delta$ and using the defining equality
+property of the range gives $Hr=sr$. In particular, $\rst{Hr}=r$.
+
+Since $\Gamma$ and $\Gamma'$ are complementary, connectedness gives
+$r\le\Gamma$ or $r\le\Gamma'$. If $r\le\Gamma$, then
+$Hr=sr=i_1r$. Taking restrictions in $(0+1)Hr=Hr$ gives
+$r=(F\beta)r\le\Gamma'$. Thus $r\le\Gamma\Gamma'=0$, a
+contradiction. If $r\le\Gamma'$, the same argument using $1+0$
+gives $r=(F\alpha)r\le\Gamma$, again a contradiction.
+\end{proof}
+
+The lifting hypothesis holds if
+$F:\mathbf C(X,X+X)\to\mathbf D(FX,F(X+X))$ is surjective. It also holds
+when every complemented $\gamma\in\mathrm{Dom}(X)$ has a total
+morphism $d_\gamma:X\to X+X$ with
+$d_\gamma\gamma=i_1\gamma$ and
+$d_\gamma\gamma^\perp=i_0\gamma^\perp$. Indeed,
+$p_\gamma d_\gamma=1_X$, where
+$p_\gamma=\nabla_X(\gamma^\perp+\gamma)$: both sides agree after
+composition with $\gamma$ and $\gamma^\perp$, and
+$\mathrm{ran}[\gamma,\gamma^\perp]=1_X$. Thus $Fd_\gamma=s_\gamma$
+by uniqueness of the target section.
+
+\begin{prop}\label{PropDisjointJoins}
+Let $\mathbf C$ be a restriction category with restriction zeros and
+binary restriction coproducts. Suppose that every pair of parallel
+morphisms with disjoint domains has a join. For each complemented
+domain $\gamma:X\to X$, the morphism
+$d_\gamma=(i_1\gamma)\vee(i_0\gamma^\perp):X\to X+X$
+is total and satisfies $d_\gamma\gamma=i_1\gamma$ and
+$d_\gamma\gamma^\perp=i_0\gamma^\perp$.
+If $F:\mathbf C\to\mathbf D$ is a range functor and $\mathbf D$
+satisfies the target hypotheses of Theorem~\ref{ThmRecIns}, then
+$Fd_\gamma=s_\gamma$, where $s_\gamma$ is the unique section of
+$\nabla_{FX}(F\gamma^\perp+F\gamma)$. Thus every such target section
+has a preimage under $F$, as required by the lifting hypothesis of
+Theorem~\ref{ThmRecIns}.
+\end{prop}
+\begin{proof}
+Since the coproduct injections are total,
+$\rst{i_1\gamma}=\gamma$ and
+$\rst{i_0\gamma^\perp}=\gamma^\perp$. The two morphisms therefore
+have disjoint domains. Their upper-bound equations give
+$d_\gamma\gamma=i_1\gamma$ and
+$d_\gamma\gamma^\perp=i_0\gamma^\perp$, and their domains satisfy
+$\gamma,\gamma^\perp\le\rst{d_\gamma}$. Hence
+$1_X=\gamma\vee\gamma^\perp\le\rst{d_\gamma}$, so $d_\gamma$ is
+total. The section argument above gives $Fd_\gamma=s_\gamma$.
+\end{proof}
+
+\subsection{Failure of the lifting hypothesis}\label{sec:counterexample}
+A target section $s_\gamma:FX\to F(X+X)$ can have no preimage
+under $F$, even when $F$ is a faithful range functor that preserves
+the near product and reflects zero arrows. We give a counterexample
+in which the pair in Theorem~\ref{ThmRecIns} is separable.
+
+Fix an acceptable enumeration $(\varphi_e)$ of the partial recursive
+functions, and put $K=\{e:\varphi_e(e)\downarrow\}$. Let $(W_a^K)$
+be the enumeration of domains of an acceptable numbering of partial
+$K$-recursive functions. Fix a primitive recursive bijective pairing
+function with projections $\pi_0,\pi_1$.
+
+The objects of $\mathbf C_K$ are the sets generated from $\mathbb N$
+by binary products and tagged coproducts, with their recursive codings.
+Its morphisms $f:X\rightharpoonup Y$ are partial functions with
+$K$-computably enumerable domains that admit ordinary partial recursive
+extensions. Equality is equality of graphs, and composition is composition
+of partial functions. We write $1_B$ for the partial identity on a
+subset $B$ and use $\simeq$ for equality of partial values, including
+simultaneous undefinedness. On $\mathbb N$, every arrow has the form
+\[
+f_{e,a}(x)\simeq
+\begin{cases}
+\varphi_e(x),&x\in W_a^K,\\
+\uparrow,&x\notin W_a^K.
+\end{cases}
+\]
+The total arrows are exactly the ordinary
+total recursive functions.
+
+\Needspace{8\baselineskip}
+\begin{prop}\label{PropCounterexample}
+The category $\mathbf C_K$ is a $P$-recursion category with binary
+coproducts and ranges. Its inclusion $F:\mathbf C_K\to\mathbf{Pfn}$
+satisfies all hypotheses of Theorem~\ref{ThmRecIns} except the lifting
+hypothesis; its diagonal pair can be recursively separable.
+Moreover, $\mathbf C_K$ contains two parallel morphisms with disjoint
+domains and no common upper bound in the restriction order.
+\end{prop}
+\begin{proof}
+Write $D_f$ for the domain of a partial function $f$, and let $f_0,g_0$
+be partial recursive extensions of composable arrows $f,g$.
+The composite has extension $g_0f_0$ and domain
+$D_f\cap f_0^{-1}(D_g)$, which is $K$-computably enumerable.
+Identities belong to the category, and associativity holds for partial
+functions. Products, restrictions, and tagged cotuples have the same
+closure property. Thus the set-theoretic near product and coproduct give
+the stated categorical structures. All objects are recursively isomorphic,
+and the empty partial functions give the prodominical zeros.
+The image of a $K$-computably enumerable set under a partial recursive
+function is $K$-computably enumerable. Its partial identity is the range,
+with the required equality property, and ranges commute with products.
+
+Define $t(\langle e,a\rangle,x)=f_{e,a}(x)$. This arrow has a
+partial recursive extension and a $K$-computably enumerable domain.
+For $v:\mathbb N\times\mathbb N\rightharpoonup\mathbb N$, choose a
+partial recursive extension $V(z,x)$, and write $D_v$ for the
+$K$-computably enumerable domain of $v$. The ordinary and oracle
+parameterization theorems \cite{MR90d:03072} give
+ordinary total recursive functions $e(z),a(z)$ such that
+$\varphi_{e(z)}(x)\simeq V(z,x)$ and
+$W_{a(z)}^K=\{x:(z,x)\in D_v\}$.
+Oracle parameterization substitutes $z$ into program code and is
+ordinary recursive; the oracle is used by the indexed program.
+Consequently $c(z)=\langle e(z),a(z)\rangle$ is total in $\mathbf C_K$
+and $v=t(c\times1)$. Recursive object codings handle the other
+parameter objects, proving the Turing property.
+
+The inclusion into $\mathbf{Pfn}$ preserves restrictions, ranges,
+coproducts, zeros, and near products. The target is split and locally
+connected, its inverse images preserve joins, and injective partial
+functions have partial inverses, so weak choice holds.
+
+Take $b(2n)=i_0(n)$ and $b(2n+1)=i_1(n)$, and put
+$p(q)\simeq\varphi_{\pi_0(q)}(q)$. The diagonal domains are
+\[
+\begin{aligned}
+D_\alpha&=\{q:q\in W_{\pi_1(q)}^K,\ p(q)\downarrow
+                   \text{ with an even value}\},\\
+D_\beta&=\{q:q\in W_{\pi_1(q)}^K,\ p(q)\downarrow
+                   \text{ with an odd value}\}.
+\end{aligned}
+\]
+The set $A=\{q:p(q)\downarrow\text{ with an even value}\}$ is
+computably enumerable, hence decidable relative to $K$. Both $A$ and
+$A^c$ are $K$-computably enumerable, so their partial identities are
+complementary domains of $\mathbf C_K$. Since
+$D_\alpha\subseteq A$ and $D_\beta\subseteq A^c$, the pair is separable.
+
+To identify the failed lift, fix an index $a_0$ and choose $e(n)$
+effectively for a program that ignores its input, simulates
+$\varphi_n(n)$, and returns $0$ on convergence. Then
+$n\in K$ if and only if $\langle e(n),a_0\rangle\in A$, so $A$ is
+nonrecursive. The arrow
+$p_A=\nabla(1_{A^c}+1_A):\mathbb N+\mathbb N\rightharpoonup\mathbb N$
+has a unique section in $\mathbf{Pfn}$, given by
+\[
+s_A(n)=
+\begin{cases}
+i_1(n),&n\in A,\\
+i_0(n),&n\notin A.
+\end{cases}
+\]
+This function and $b^{-1}s_A$ are total and nonrecursive. They therefore
+have no preimages under the inclusion $F$.
+
+The morphisms $f=i_1 1_A$ and $g=i_0 1_{A^c}$ from $\mathbb N$ to
+$\mathbb N+\mathbb N$ belong to $\mathbf C_K$ and have disjoint
+domains. If $d$ were a common upper bound, then $d1_A=f$ and
+$d1_{A^c}=g$. Since $A\cup A^c=\mathbb N$, these equations force
+$d=s_A$, contradicting the fact that every total morphism of
+$\mathbf C_K$ is recursive. Thus the joins required by
+Proposition~\ref{PropDisjointJoins} fail to exist, although the domains
+of $\mathbf C_K$ have binary joins.
+\end{proof}
+
+\bigskip
+\noindent\textbf{Acknowledgements.}
+For their comments I thank Sergei Artemov, Robin Cockett, Alex Heller,
+Alphonse Vasquez, and Noson Yanofsky. Robin Cockett suggested considering
+union restriction categories in the inseparability argument.
+
+\begin{thebibliography}{DPM91}
+\bibitem[CL02]{MR1871071}
+J.~R.~B. Cockett and Stephen Lack, \textit{Restriction categories. I.
+Categories of partial maps}, Theoret. Comput. Sci. \textbf{270} (2002),
+no.~1--2, 223--259.
+\bibitem[CL03]{MR1963657}
+J.~R.~B. Cockett and Stephen Lack, \textit{Restriction categories. II.
+Partial map classification}, Theoret. Comput. Sci. \textbf{294} (2003),
+no.~1--2, 61--102.
+\bibitem[DPH87]{MR88i:03078}
+Robert A. Di Paola and Alex Heller, \textit{Dominical categories: recursion
+theory without elements}, J. Symbolic Logic \textbf{52} (1987), no.~3, 594--635.
+\bibitem[DPM91]{MR93b:03103}
+Robert A. Di Paola and Franco Montagna, \textit{Some properties of the
+syntactic $P$-recursion categories generated by consistent, recursively
+enumerable extensions of Peano arithmetic}, J. Symbolic Logic
+\textbf{56} (1991), no.~2, 643--660.
+\bibitem[Hel90]{MR92e:03067}
+Alex Heller, \textit{An existence theorem for recursion categories},
+J. Symbolic Logic \textbf{55} (1990), no.~3, 1252--1268.
+\bibitem[Len04]{leng}
+Florian Lengyel, \textit{More existence theorems for recursion categories},
+Ann. Pure Appl. Logic \textbf{125} (2004), no.~1--3, 1--41.
+\bibitem[Len26]{leng2026composition}
+Florian Lengyel, \textit{Pointwise provable equality and the failure of
+composition}, 2026, \href{https://arxiv.org/abs/2609.25556v2}{arXiv:2609.25556v2}.
+\bibitem[Mon89]{MR90i:03046}
+Franco Montagna, \textit{``Pathologies'' in two syntactic categories of
+partial maps}, Notre Dame J. Formal Logic \textbf{30} (1989), no.~1, 105--116.
+\bibitem[Odi89]{MR90d:03072}
+Piergiorgio Odifreddi, \textit{Classical recursion theory}, North-Holland,
+Amsterdam, 1989.
+\bibitem[Ros86]{coneit}
+G. Rosolini, \textit{Continuity and effectiveness in topoi}, D.Phil.
+thesis, University of Oxford, 1986.
+\bibitem[Ros88]{MR90e:18001}
+G. Rosolini, \textit{Representation theorems for $P$-categories},
+Categorical Algebra and its Applications (F. Borceux, ed.), Lecture Notes
+in Mathematics, vol.~1348, Springer, Berlin, 1988, pp.~307--315.
+\bibitem[Ste93]{MR95c:03110}
+Stefano Stefani, \textit{A relativization mechanism in recursion categories},
+J. Symbolic Logic \textbf{58} (1993), no.~4, 1251--1267.
+\bibitem[Ste02]{MR2003a:18003}
+S.~T. Stefani, \textit{An algebraic approach to categories of partial
+morphisms}, J. Symbolic Logic \textbf{67} (2002), no.~1, 117--129.
+\end{thebibliography}
+\end{document}

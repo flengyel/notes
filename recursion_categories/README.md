@@ -1,5 +1,29 @@
 # Recursion categories
 
+## Ranges and inseparability
+
+*Ranges and inseparability in recursion categories*
+
+Version 1, 1 November 2026.
+
+- [Read the note (PDF)](Ranges_and_Inseparability_v1.pdf).
+- [LaTeX source](Ranges_and_Inseparability_v1.tex).
+
+The note proves noncomplementation of a Turing domain and a criterion for
+inseparable domains under a range functor. Splitness, weak choice and the
+stated inverse-image law provide the target sections; a separate lifting
+hypothesis relates them to the source. It also proves a sufficient condition
+using joins of morphisms with disjoint domains, and a counterexample when
+lifting fails. The criterion does not require local connectedness.
+
+This revises *Locally connected recursion categories*, dated 10 October 2026.
+The dated originals are preserved as [LOCOct10f.pdf](LOCOct10f.pdf) and
+[LOCOct10f.tex](LOCOct10f.tex). The revised note retains all 18 numbered
+statements and replaces the connected-domain argument in the criterion.
+[Changes and local reviews](reviews/ranges_and_inseparability_v1/README.md)
+record the scope of the revision.
+
+
 ## Catalogue and coalgebraic representations
 
 *A catalogue and classification problems over sets of integers*
@@ -70,3 +94,4 @@ pdflatex -interaction=nonstopmode -halt-on-error Recursion_Categories_and_Coalge
 Use the corresponding source filename to build any of the notes above.
 Each bibliography is included in its source; no separate bibliography tool is
 needed. The repository's [CC BY 4.0 license](../LICENSE) applies to these notes.
+

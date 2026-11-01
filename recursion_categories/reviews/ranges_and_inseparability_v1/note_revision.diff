@@ -1,0 +1,466 @@
+--- LOCOct10f.tex
++++ Ranges_and_Inseparability_v1.tex
+@@ -10,6 +10,8 @@
+ \usepackage{lmodern,microtype}
+ \usepackage{needspace}
+ \usepackage[hidelinks]{hyperref}
++\hypersetup{pdftitle={Ranges and inseparability in recursion categories -- Version 1},
++pdfauthor={Florian Lengyel}}
+ 
+ \theoremstyle{plain}
+ \newtheorem{thm}{Theorem}[section]
+@@ -41,22 +43,24 @@
+ \newcommand{\IT}[1]{\mathrm{It}\left({#1}\right)}
+ 
+ \begin{document}
+-\title{Locally connected recursion categories}
++\title{Ranges and inseparability in recursion categories}
+ \author{Florian Lengyel}
+-\date{Revised 10 October 2026}
++\date{Version 1\\1 November 2026}
+ \thanks{Email address: flengyel@gc.cuny.edu}
+ \address{The Graduate School and University Center, %
+ Ph.D Program in Computer Science, %
+ The City University of New York, 365 Fifth Avenue, New York, NY %
+ 10016}
+ 
++\subjclass[2020]{03D75, 03G30}
++
+ \begin{abstract}
+ In a $P$-recursion category with binary coproducts and ranges, the
+ domain of a weak Turing morphism applied to the diagonal has no
+ complement when the identity of its underlying object is nonzero.
+ We also construct recursively inseparable domains using a range functor
+-to a locally connected split restriction category satisfying weak
+-choice, in which inverse images of domains preserve binary joins.
++to a split restriction category satisfying weak choice, in which inverse
++images of domains along every morphism preserve binary joins.
+ This construction requires each target morphism selecting between the
+ images of a complemented source domain and its complement to have a preimage under
+ the functor. Joins of source morphisms with disjoint domains suffice
+@@ -64,8 +68,6 @@
+ hypotheses, but the constructed pair is separable and the required
+ preimage does not exist.
+ 
+-\bigskip\noindent
+-{\it MSC:} 03D75; 03G30
+ \end{abstract}
+ 
+ \maketitle
+@@ -89,8 +91,9 @@
+ while its complement contains the second.
+ 
+ The inseparability argument uses a range functor, which preserves the
+-domain and range operations, to a category satisfying local
+-connectedness and weak choice. Under the target hypotheses of
++domain and range operations, to a split restriction category satisfying
++weak choice, in which inverse images of domains along every morphism
++preserve binary joins. Under the target hypotheses of
+ Theorem~\ref{ThmRecIns}, every complemented source domain determines a
+ target morphism that agrees with one coproduct injection on the image
+ of the domain and with the other on the image of its complement.
+@@ -104,7 +107,7 @@
+ 
+ \Needspace{6\baselineskip}
+ Examples defined by arithmetic provability motivate the use of a
+-functor to a locally connected category. Let $T$ be a consistent
++comparison functor. Let $T$ be a consistent
+ recursively enumerable extension of Peano arithmetic ($\mathrm{PA}$).
+ In the category $S_T$, morphisms are equivalence classes of program
+ indices: two indices are equivalent precisely when $T$ proves a single
+@@ -184,7 +187,7 @@
+ Binary \textit{restriction coproducts} are categorical coproducts with
+ total injections $i_0:X\to X+Y$ and $i_1:Y\to X+Y$. For morphisms
+ $f:X\to Z$ and $g:Y\to Z$, write $[f,g]:X+Y\to Z$ for their
+-cotuple. The \textit{codiagonal} is
++copairing. The \textit{codiagonal} is
+ $\nabla_X=[1_X,1_X]:X+X\to X$; thus $[f,g]=\nabla_Z(f+g)$.
+ Restrictions satisfy $\rst{f+g}=\rst f+\rst g$.
+ 
+@@ -302,8 +305,7 @@
+ category}) is a prodominical isotypical $P$-category  which contains a Turing
+ morphism. Previously, the term {\it recursion category}
+ was used for dominical $P$-recursion categories; for us a recursion category
+-is always a $P$-recursion category. The prototypical example of a Turing morphism $\MAP{t}{X\times X}{X}$ is the universal partial function of classical 
+-recursion theory ~\cite[Theorem II.1.8, page 132]{MR90d:03072}. Examples of Turing morphisms and recursion categories are given in ~\cite{MR88i:03078,MR90i:03046,MR92e:03067,MR93b:03103,MR95c:03110,leng}.
++is always a $P$-recursion category. The prototypical example of a Turing morphism $\MAP{t}{X\times X}{X}$ is the universal partial recursive function ~\cite[Theorem II.1.8, page 132]{MR90d:03072}. Examples of Turing morphisms and recursion categories are given in ~\cite{MR88i:03078,MR90i:03046,MR92e:03067,MR93b:03103,MR95c:03110,leng}.
+ 
+ A morphism $t:X\times X\to X$ is \textit{weak Turing} if, for every
+ $f:X\to X$, there is a total morphism $e:X\to X$ such that
+@@ -536,7 +538,7 @@
+ \cite[Example~1, p.~112]{MR90i:03046}, shows that Proposition~5.3 of
+ \cite{MR88i:03078} does not extend to this generality. Theorem~\ref{ThmNoncomp} gives the noncomplementation result directly.
+ 
+-\section{Recursively inseparable domains and local connectedness}\label{sec:inseparability}
++\section{Recursively inseparable domains}\label{sec:inseparability}
+ 
+ Let $\mathbf C$ be a $P$-recursion category with coproducts and ranges.
+ A disjoint pair $(\alpha,\beta)$ in $\mathrm{Dom}(X)$ is
+@@ -600,8 +602,12 @@
+ restriction zeros, and binary restriction coproducts. A \textit{range
+ functor} $F:\mathbf C\to\mathbf D$ preserves restrictions, ranges,
+ zeros, and binary coproducts. It preserves total morphisms, meets and
+-joins of domains, and complements. We identify $F(X+Y)$ with
+-$FX+FY$ through its canonical coproduct comparison. For $P$-categories,
++joins of domains, and complements. For objects $X,Y$ of $\mathbf C$,
++the canonical coproduct comparison is the isomorphism
++\[
++ \chi_{X,Y}=[Fi_0,Fi_1]:FX+FY\longrightarrow F(X+Y).
++\]
++For $P$-categories,
+ preservation of the near product is not required; examples occur in
+ categories of coalgebras \cite{leng}.
+ 
+@@ -630,10 +636,12 @@
+ A restriction category satisfies the \textit{weak axiom of choice},
+ or \textit{weak choice}, if every partial monomorphism has a section.
+ 
+-In classical recursion theory, to check that the partial recursive function $\phi$ is a partial monomorphism, it suffices to check that for all (total) recursive functions $\theta,\theta'$, $\phi\theta=\phi\theta'$ implies $\rst\phi\theta=\rst\phi\theta'$. This follows from the fact that a recursively enumerable set is either empty or the image of a total recursive function. The following is a generalization.
++To check that a partial recursive function $\phi$ is a partial monomorphism, it suffices to check that for all (total) recursive functions $\theta,\theta'$, $\phi\theta=\phi\theta'$ implies $\rst\phi\theta=\rst\phi\theta'$. This follows from the fact that a recursively enumerable set is either empty or the image of a total recursive function. The following is a generalization.
+ 
+ \begin{prop}\label{PropPartialMono}
+-Let $\mathbf{C}$ be a split restriction category, and let $\MAP{f}{X}{Y}$ be a morphism in $\mathbf{C}$. Suppose that for all morphisms $g,h\in\mathbf{C}_T$, $f g=f h$ implies $\rst{f} g=\rst{f}h$. 
++Let $\mathbf{C}$ be a split restriction category, and let $\MAP{f}{X}{Y}$ be a morphism in $\mathbf{C}$. Suppose that, for every object $W$ of $\mathbf C$ and all total
++morphisms $g,h:W\to X$, the equality $fg=fh$ implies
++$\rst f\,g=\rst f\,h$. 
+ Then $f$ is a partial monomorphism.
+ \end{prop}
+ 
+@@ -653,67 +661,86 @@
+ Therefore, $f$ is a partial monomorphism.
+ \end{proof}
+ 
+-\begin{prop}
+-Suppose that $\mathbf C$ is a locally connected restriction category
+-with restriction zeros and binary restriction coproducts, in which
+-inverse images of domains preserve binary joins. 
+-Suppose that $\alpha$ and $\beta$ are domains in $X$ such that $\alpha\beta=0_X$.
++\begin{prop}\label{PropTotalCopMono}
++Let $\mathbf C$ be a restriction category with ranges, restriction
++zeros and binary restriction coproducts, in which inverse images of
++domains along every morphism preserve binary joins. Let $X$ be an
++object of $\mathbf C$, and suppose that $\alpha,\beta\in\mathrm{Dom}(X)$ satisfy $\alpha\beta=0_X$.
+ For total morphisms $\theta,\theta':Y\to X+X$, equality
+ $\nabla_X(\alpha+\beta)\theta=\nabla_X(\alpha+\beta)\theta'$
+ implies $(\alpha+\beta)\theta=(\alpha+\beta)\theta'$.
+ \end{prop}
+-
+-\begin{proof}
+-First observe that since $\alpha\beta=0$,
+-\begin{align}\label{orthog1}
+-\nabla_X(\alpha+0)\theta=\alpha\nabla_X(\alpha+\beta)\theta=\alpha\nabla_X(\alpha+\beta)\theta'
+-=\nabla_X(\alpha+0)\theta';
+-\end{align}
+-similarly,
+-\begin{align}\label{orthog2}
+-\nabla_X(0+\beta)\theta=\nabla_X(0+\beta)\theta'.
+-\end{align}
+-
+-Let $\gamma$ be a connected domain in $Y$. Proposition~\ref{PropAlternative}
+-applies to the total maps $\theta$ and $\theta'$. Up to symmetry,
+-there are two cases.
+-
+-\noindent{\sc Case one:} $\theta\gamma\prec1_X+0$ and $\theta'\gamma\prec0+1_X$.
+-By equation (\ref{orthog1}),
+-\[
+-\nabla_X(\alpha+\beta)\theta\gamma=\nabla_X(\alpha+0)\theta\gamma
+-=\nabla_X(\alpha+0)\theta'\gamma=\nabla_X(0+0)\theta'\gamma=0.
+-\]
+-By equation (\ref{orthog2}),
+-\[
+-\nabla_X(\alpha+\beta)\theta'\gamma=\nabla_X(0+\beta)\theta'\gamma
+-=\nabla_X(0+\beta)\theta\gamma=\nabla_X(0+0)\theta'\gamma=0.
++\begin{proof}
++Put $p=\nabla_X(\alpha+\beta):X+X\to X$, so that
++$\rst p=\alpha+\beta$. Let $i_0,i_1:X\to X+X$ be the coproduct
++injections, and define
++\[
++ \begin{gathered}
++ \rho_0=[1_X,0_X],\qquad \rho_1=[0_X,1_X]:X+X\to X,\\
++ \varepsilon_i=i_i\rho_i:X+X\to X+X\qquad(i=0,1).
++ \end{gathered}
++\]
++The summand domains $\varepsilon_0,\varepsilon_1$ are disjoint
++and have join $1_{X+X}$. Define domains on $Y$ by
++\[
++ e_i=\theta^*\varepsilon_i,\qquad
++ f_j=(\theta')^*\varepsilon_j,\qquad
++ \delta_{ij}=e_i f_j\qquad(i,j\in\{0,1\}).
++\]
++Totality and inverse-image preservation give
++$e_0\vee e_1=1_Y=f_0\vee f_1$. Distributivity gives
++$\delta_{i0}\vee\delta_{i1}=e_i$, and hence the four domains
++$\delta_{ij}$ have join $1_Y$.
++
++For fixed $i,j\in\{0,1\}$, put
++\[
++ x_{ij}=\rho_i\theta\delta_{ij}:Y\to X,
++ \qquad y_{ij}=\rho_j\theta'\delta_{ij}:Y\to X.
++\]
++The restriction identity
++$\varepsilon_i\theta=\theta\rst{\varepsilon_i\theta}$ and its
++analogue for $\theta'$ give
++\[
++ \theta\delta_{ij}=i_i x_{ij},\qquad
++ \theta'\delta_{ij}=i_j y_{ij}.
++\]
++Write $a_0=\alpha$ and $a_1=\beta$. The hypothesis $p\theta=p\theta'$
++gives the common morphism
++\[
++ z_{ij}=a_i x_{ij}=a_j y_{ij}:Y\to X.
+ \]
+ It follows that
+-\begin{align*}
+-(\alpha+\beta)\theta\gamma&=(\alpha+0)\theta\gamma=i_0\nabla_X(\alpha+0)\theta\gamma=0\\
+-&=i_1\nabla_X(0+\beta)\theta'\gamma=(0+\beta)\theta'\gamma=(\alpha+\beta)\theta'\gamma.
+-\end{align*}
+-
+-\noindent{\sc Case two:} $\theta\gamma\prec1_X+0$ and $\theta'\gamma\prec1_X+0$. By equation (\ref{orthog1}),
+-\begin{align*}
+-(\alpha+\beta)\theta\gamma&=(\alpha+0)\theta\gamma=i_0\nabla_X(\alpha+0)\theta\gamma\\
+-&=i_0\nabla_X(\alpha+0)\theta'\gamma=(\alpha+0)\theta'\gamma=(\alpha+\beta)\theta'\gamma.
+-\end{align*}
+-
+-Since $\gamma$ is an arbitrary connected domain in $Y$ and $\mathbf{C}$ is locally connected,  $(\alpha+\beta)\theta=(\alpha+\beta)\theta'$.
++\[
++ (\alpha+\beta)\theta\delta_{ij}=i_i z_{ij},\qquad
++ (\alpha+\beta)\theta'\delta_{ij}=i_j z_{ij}.
++\]
++If $i=j$, these morphisms agree. If $i\ne j$, then
++$z_{ij}=a_i z_{ij}=a_i a_j y_{ij}=0_{Y,X}$, so both morphisms
++are zero. Thus they agree for every pair $i,j$.
++
++Form the copairing
++\[
++ q=[[[\delta_{00},\delta_{01}],\delta_{10}],\delta_{11}]
++       :((Y+Y)+Y)+Y\longrightarrow Y.
++\]
++A domain receives $q$ precisely when it receives each $\delta_{ij}$,
++so $\mathrm{ran}(q)=1_Y$. The preceding equalities give
++$(\alpha+\beta)\theta q=(\alpha+\beta)\theta' q$.
++Range agreement therefore gives
++$(\alpha+\beta)\theta=(\alpha+\beta)\theta'$.
+ \end{proof}
+ 
+ \begin{prop}\label{PropCopOut}
+-Let $\mathbf C$ be a locally connected split restriction category with
++Let $\mathbf C$ be a split restriction category with ranges,
+ restriction zeros and binary restriction coproducts. Suppose that inverse
+-images of domains preserve binary joins and that weak choice holds.
++images of domains along every morphism preserve binary joins and that
++weak choice holds.
+ If $\alpha,\beta\in\mathrm{Dom}(X)$ satisfy $\alpha\beta=0_X$,
+ then $p=\nabla_X(\alpha+\beta):X+X\to X$ has a unique section
+ $f:X\to X+X$. Moreover, $pf=\rst f=\mathrm{ran}(p)=\alpha\vee\beta$.
+ \end{prop}
+ \begin{proof}
+-The preceding proposition and Proposition~\ref{PropPartialMono} show
++Propositions~\ref{PropTotalCopMono} and~\ref{PropPartialMono} show
+ that $p$ is a partial monomorphism; here $\rst p=\alpha+\beta$.
+ Weak choice supplies a section $f$. By R4 and the section equations,
+ $\rst p\,f=f\rst{pf}=f\rst f=f$.
+@@ -745,19 +772,19 @@
+ 
+ \begin{thm}\label{ThmRecIns}
+ Let $\mathbf C$ be a $P$-recursion category with binary coproducts and
+-ranges. Let $\mathbf D$ be a locally connected split restriction category
+-with ranges, restriction zeros, and binary restriction coproducts,
+-satisfying weak choice, in which inverse images of domains preserve
++ranges. Let $\mathbf D$ be a split restriction category with ranges,
++restriction zeros and binary restriction coproducts, satisfying weak
++choice, in which inverse images of domains along every morphism preserve
+ binary joins. Let $F:\mathbf C\to\mathbf D$ be a range functor,
+ $t:X\times X\to X$ a weak Turing morphism in $\mathbf C$ with
+ $1_X\notin\ker F$, and $b:X\to X+X$ an isomorphism.
+ 
+ For each complemented $\gamma\in\mathrm{Dom}(X)$, let
+-$s_\gamma:FX\to F(X+X)$ be the unique section of
+-$\nabla_{FX}(F\gamma^\perp+F\gamma)$, identifying $F(X+X)$ with
+-$FX+FX$. Assume the \textit{lifting hypothesis}: for every such
+-$\gamma$, there exists a morphism $d_\gamma:X\to X+X$ in
+-$\mathbf C$ such that $Fd_\gamma=s_\gamma$. Then the domains
++$s_\gamma:FX\to FX+FX$ be the unique section of
++$\nabla_{FX}(F\gamma^\perp+F\gamma)$. Assume the \textit{lifting
++hypothesis}: for every such $\gamma$, there exists a morphism
++$d_\gamma:X\to X+X$ in $\mathbf C$ such that
++$Fd_\gamma=\chi_{X,X}s_\gamma$. Then the domains
+ \[
+ \alpha=(bt\Delta_X)^*(1_X+0_X),\qquad
+ \beta=(bt\Delta_X)^*(0_X+1_X)
+@@ -769,27 +796,58 @@
+ and zero, $\alpha\beta=h^*((1_X+0_X)(0_X+1_X))=0_X$.
+ Suppose that a complemented domain $\gamma$ separates the pair. Put
+ $\Gamma=F\gamma$, $\Gamma'=F\gamma^\perp$, and $s=s_\gamma$.
+-Proposition~\ref{PropDichotomy} gives
+-$s\Gamma=i_1\Gamma$ and $s\Gamma'=i_0\Gamma'$, and $s$ is total.
+-
+-By the lifting hypothesis, choose $d_\gamma:X\to X+X$ with
+-$Fd_\gamma=s$, and put $u=b^{-1}d_\gamma:X\to X$.
+-Then $Fu=(Fb)^{-1}s$. Choose a total $t$-index $e:X\to X$ of $u$.
+-Equation~\eqref{EqDiagonalIndex} gives $t\Delta_Xe=ue$.
+-Writing $H=Fh$ and $E=Fe$, we obtain $HE=sE$.
+-By Proposition~\ref{PropKernel}, there is a nonzero connected domain
+-$\delta$ on $FX$. Since $E$ is total, $\rst{E\delta}=\delta$,
+-so $E\delta\ne0$. Proposition~\ref{PropAlternative} shows that
+-$r=\mathrm{ran}(E\delta)$ is nonzero and connected.
+-Composing $HE=sE$ with $\delta$ and using the defining equality
+-property of the range gives $Hr=sr$. In particular, $\rst{Hr}=r$.
+-
+-Since $\Gamma$ and $\Gamma'$ are complementary, connectedness gives
+-$r\le\Gamma$ or $r\le\Gamma'$. If $r\le\Gamma$, then
+-$Hr=sr=i_1r$. Taking restrictions in $(0+1)Hr=Hr$ gives
+-$r=(F\beta)r\le\Gamma'$. Thus $r\le\Gamma\Gamma'=0$, a
+-contradiction. If $r\le\Gamma'$, the same argument using $1+0$
+-gives $r=(F\alpha)r\le\Gamma$, again a contradiction.
++The domains $\Gamma,\Gamma'$ on $FX$ are complementary, and
++$s:FX\to FX+FX$ is total. Write $j_0,j_1:FX\to FX+FX$ for the target
++coproduct injections. Proposition~\ref{PropDichotomy} gives
++$s\Gamma=j_1\Gamma$ and $s\Gamma'=j_0\Gamma'$.
++
++Let $P_0=1_{FX}+0_{FX}$ and $P_1=0_{FX}+1_{FX}$ be the summand
++domains on $FX+FX$. The morphisms $P_0s$ and $j_0\Gamma'$ agree
++after both $\Gamma$ and $\Gamma'$. Since
++$\mathrm{ran}[\Gamma,\Gamma']=1_{FX}$, range agreement gives
++$P_0s=j_0\Gamma'$. Likewise $P_1s=j_1\Gamma$. Taking restrictions
++gives
++\[
++ s^*P_0=\Gamma',\qquad s^*P_1=\Gamma.
++\]
++
++Choose $d_\gamma:X\to X+X$ with
++$Fd_\gamma=\chi_{X,X}s$, and put
++$u=b^{-1}d_\gamma:X\to X$.
++Choose a total $t$-index $e:X\to X$ of $u$.
++Equation~\eqref{EqDiagonalIndex} gives
++$t\Delta_Xe=ue$, and hence $he=d_\gamma e$.
++Put
++\[
++ H=\chi_{X,X}^{-1}Fh:FX\to FX+FX,
++ \qquad E=Fe:FX\to FX.
++\]
++Applying $F$ to the preceding identity gives $HE=sE$.
++The canonical comparison satisfies
++$\chi_{X,X}P_0=F(1_X+0_X)\chi_{X,X}$ and
++$\chi_{X,X}P_1=F(0_X+1_X)\chi_{X,X}$.
++Since $F$ preserves restrictions, it follows that
++$F\alpha=H^*P_0$ and $F\beta=H^*P_1$. Thus
++\[
++ \begin{aligned}
++ E^*F\alpha&=(HE)^*P_0=(sE)^*P_0=E^*\Gamma',\\
++ E^*F\beta&=(HE)^*P_1=(sE)^*P_1=E^*\Gamma.
++ \end{aligned}
++\]
++The inequalities $F\alpha\le\Gamma$ and $F\beta\le\Gamma'$
++therefore give
++\[
++ E^*\Gamma'\le E^*\Gamma,\qquad E^*\Gamma\le E^*\Gamma'.
++\]
++These two domains are equal, and their meet is
++$E^*(\Gamma\Gamma')=0_{FX}$. Consequently both are zero.
++The morphism $E$ is total, so the inverse-image join law gives
++\[
++ 1_{FX}=E^*1_{FX}
++       =E^*(\Gamma\vee\Gamma')
++       =E^*\Gamma\vee E^*\Gamma'=0_{FX},
++\]
++contrary to $1_X\notin\ker F$.
+ \end{proof}
+ 
+ The lifting hypothesis holds if
+@@ -801,8 +859,10 @@
+ $p_\gamma d_\gamma=1_X$, where
+ $p_\gamma=\nabla_X(\gamma^\perp+\gamma)$: both sides agree after
+ composition with $\gamma$ and $\gamma^\perp$, and
+-$\mathrm{ran}[\gamma,\gamma^\perp]=1_X$. Thus $Fd_\gamma=s_\gamma$
+-by uniqueness of the target section.
++$\mathrm{ran}[\gamma,\gamma^\perp]=1_X$. Thus
++$\chi_{X,X}^{-1}Fd_\gamma$ is a section of
++$\nabla_{FX}(F\gamma^\perp+F\gamma)$, and uniqueness gives
++$Fd_\gamma=\chi_{X,X}s_\gamma$.
+ 
+ \begin{prop}\label{PropDisjointJoins}
+ Let $\mathbf C$ be a restriction category with restriction zeros and
+@@ -814,9 +874,10 @@
+ $d_\gamma\gamma^\perp=i_0\gamma^\perp$.
+ If $F:\mathbf C\to\mathbf D$ is a range functor and $\mathbf D$
+ satisfies the target hypotheses of Theorem~\ref{ThmRecIns}, then
+-$Fd_\gamma=s_\gamma$, where $s_\gamma$ is the unique section of
+-$\nabla_{FX}(F\gamma^\perp+F\gamma)$. Thus every such target section
+-has a preimage under $F$, as required by the lifting hypothesis of
++$Fd_\gamma=\chi_{X,X}s_\gamma$, where $s_\gamma:FX\to FX+FX$
++is the unique section of $\nabla_{FX}(F\gamma^\perp+F\gamma)$.
++Thus $\chi_{X,X}s_\gamma$ has a preimage under $F$, as required
++by the lifting hypothesis of
+ Theorem~\ref{ThmRecIns}.
+ \end{prop}
+ \begin{proof}
+@@ -828,13 +889,15 @@
+ $d_\gamma\gamma^\perp=i_0\gamma^\perp$, and their domains satisfy
+ $\gamma,\gamma^\perp\le\rst{d_\gamma}$. Hence
+ $1_X=\gamma\vee\gamma^\perp\le\rst{d_\gamma}$, so $d_\gamma$ is
+-total. The section argument above gives $Fd_\gamma=s_\gamma$.
++total. The section argument above gives
++$Fd_\gamma=\chi_{X,X}s_\gamma$.
+ \end{proof}
+ 
+ \subsection{Failure of the lifting hypothesis}\label{sec:counterexample}
+-A target section $s_\gamma:FX\to F(X+X)$ can have no preimage
+-under $F$, even when $F$ is a faithful range functor that preserves
+-the near product and reflects zero arrows. We give a counterexample
++A target section $s_\gamma:FX\to FX+FX$ can have no source
++morphism $d_\gamma:X\to X+X$ with
++$Fd_\gamma=\chi_{X,X}s_\gamma$, even when $F$ is a faithful range
++functor that preserves the near product and reflects zero morphisms. We give a counterexample
+ in which the pair in Theorem~\ref{ThmRecIns} is separable.
+ 
+ Fix an acceptable enumeration $(\varphi_e)$ of the partial recursive
+@@ -850,7 +913,7 @@
+ extensions. Equality is equality of graphs, and composition is composition
+ of partial functions. We write $1_B$ for the partial identity on a
+ subset $B$ and use $\simeq$ for equality of partial values, including
+-simultaneous undefinedness. On $\mathbb N$, every arrow has the form
++simultaneous undefinedness. On $\mathbb N$, every morphism has the form
+ \[
+ f_{e,a}(x)\simeq
+ \begin{cases}
+@@ -858,7 +921,7 @@
+ \uparrow,&x\notin W_a^K.
+ \end{cases}
+ \]
+-The total arrows are exactly the ordinary
++The total morphisms are exactly the ordinary
+ total recursive functions.
+ 
+ \Needspace{8\baselineskip}
+@@ -872,11 +935,11 @@
+ \end{prop}
+ \begin{proof}
+ Write $D_f$ for the domain of a partial function $f$, and let $f_0,g_0$
+-be partial recursive extensions of composable arrows $f,g$.
++be partial recursive extensions of composable morphisms $f,g$.
+ The composite has extension $g_0f_0$ and domain
+ $D_f\cap f_0^{-1}(D_g)$, which is $K$-computably enumerable.
+ Identities belong to the category, and associativity holds for partial
+-functions. Products, restrictions, and tagged cotuples have the same
++functions. Products, restrictions, and tagged copairings have the same
+ closure property. Thus the set-theoretic near product and coproduct give
+ the stated categorical structures. All objects are recursively isomorphic,
+ and the empty partial functions give the prodominical zeros.
+@@ -884,7 +947,7 @@
+ function is $K$-computably enumerable. Its partial identity is the range,
+ with the required equality property, and ranges commute with products.
+ 
+-Define $t(\langle e,a\rangle,x)=f_{e,a}(x)$. This arrow has a
++Define $t(\langle e,a\rangle,x)=f_{e,a}(x)$. This morphism has a
+ partial recursive extension and a $K$-computably enumerable domain.
+ For $v:\mathbb N\times\mathbb N\rightharpoonup\mathbb N$, choose a
+ partial recursive extension $V(z,x)$, and write $D_v$ for the
+@@ -924,7 +987,7 @@
+ effectively for a program that ignores its input, simulates
+ $\varphi_n(n)$, and returns $0$ on convergence. Then
+ $n\in K$ if and only if $\langle e(n),a_0\rangle\in A$, so $A$ is
+-nonrecursive. The arrow
++nonrecursive. The morphism
+ $p_A=\nabla(1_{A^c}+1_A):\mathbb N+\mathbb N\rightharpoonup\mathbb N$
+ has a unique section in $\mathbf{Pfn}$, given by
+ \[
